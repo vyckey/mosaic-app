@@ -78,7 +78,7 @@ export function CustomTabList(props: TabListProps) {
             <ThemedText className="primary">Docs</ThemedText>
 
             <SymbolView
-              tintColor={rgb(theme.foreground)}
+              tintColor={rgb(theme.colors.text)}
               name={{
                 ios: 'arrow.up.right.square',
                 web: 'link',

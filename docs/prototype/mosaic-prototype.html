@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>拼图 Mosaic · Interactive Prototype</title>
+<style>
+:root{
+  --bg:#f7f3ea; --paper:#fffdf8; --paper2:#f2eee4; --ink:#39423b;
+  --muted:#8a9189; --sage:#7f9b82; --sage2:#dce7d8; --clay:#c98770;
+  --lav:#b8adc9; --line:#e6e0d4; --shadow:0 12px 35px rgba(70,65,50,.08);
+  --radius:22px;
+}
+*{box-sizing:border-box} body{margin:0;background:#ebe7de;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink)}
+button,input,textarea{font:inherit} button{border:0;cursor:pointer;color:inherit}
+.app{width:min(100%,430px);height:100vh;min-height:720px;margin:auto;background:var(--bg);position:relative;overflow:hidden;box-shadow:0 0 50px #bdb8aa}
+.content{height:calc(100vh - 78px);overflow:auto;padding:24px 18px 120px;scroll-behavior:smooth}
+.content::-webkit-scrollbar{width:0}
+h1{font-size:28px;letter-spacing:-.5px;margin:0 0 5px} h2{font-size:20px;margin:0 0 12px} h3{font-size:16px;margin:0 0 8px}
+p{line-height:1.65;margin:7px 0}.muted{color:var(--muted);font-size:13px}.tiny{font-size:12px;color:var(--muted)}
+.card{background:var(--paper);border:1px solid rgba(220,214,201,.8);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin:12px 0}
+.soft{background:var(--paper2)} .sage{background:var(--sage2)} .lav{background:#eee9f2}.clay{background:#f2e1d9}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{background:#eee9df;border-radius:999px;padding:7px 11px;font-size:12px}.chip.active{background:var(--sage);color:white}
+.btn{background:var(--sage);color:white;border-radius:14px;padding:11px 15px;font-weight:600}.btn.ghost{background:#ece8de;color:var(--ink)}.btn.small{padding:8px 11px;font-size:12px}
+.iconbtn{width:36px;height:36px;border-radius:12px;background:#eeeae0;display:grid;place-items:center}
+.hero{padding:2px 2px 8px}.weather{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+.memory{background:linear-gradient(135deg,#e6eee2,#f5eadf);position:relative;overflow:hidden}
+.memory:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:#d4dfcd;right:-55px;top:-55px;opacity:.55}
+.memory .year{font-size:12px;color:#788274;margin-bottom:8px}.quote{font-size:17px;line-height:1.55;position:relative;z-index:1}
+.frag{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}.frag:last-child{border:0}.emoji{width:36px;height:36px;border-radius:12px;background:#f0ece3;display:grid;place-items:center;font-size:19px}.fragtime{font-size:12px;color:var(--muted);width:45px}.grow{flex:1}
+.progress{height:8px;background:#e9e5dc;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--sage);border-radius:99px}
+.nav{position:absolute;bottom:0;left:0;right:0;height:78px;background:rgba(255,253,248,.95);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;padding:8px 8px 10px;z-index:20;backdrop-filter:blur(16px)}
+.nav button{background:none;color:#92988f;font-size:11px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.nav button.active{color:var(--sage);font-weight:700}.fab{width:46px!important;height:46px;margin:auto;border-radius:50%!important;background:var(--sage)!important;color:white!important;font-size:25px!important;box-shadow:0 7px 18px rgba(94,122,98,.25)}
+.subnav{display:flex;gap:6px;overflow:auto;margin:14px 0}.subnav button{white-space:nowrap;background:#ece8de;padding:9px 13px;border-radius:999px;font-size:12px}.subnav button.active{background:var(--sage);color:white}
+.timeline-day{margin:20px 0 6px;font-weight:700}.listcard{padding:4px 16px}
+.search{display:flex;gap:8px;background:var(--paper);border:1px solid var(--line);padding:12px 14px;border-radius:15px}.search input{border:0;outline:0;background:transparent;flex:1}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.calhead{font-size:11px;color:var(--muted);padding:7px 0}.day{height:39px;padding-top:8px;border-radius:10px;font-size:12px;position:relative}.day.has:after{content:"••";position:absolute;bottom:2px;left:0;right:0;color:var(--sage);font-size:9px}.day.today{background:var(--sage);color:white}.day.today:after{color:white}
+.map{height:260px;border-radius:20px;background:linear-gradient(150deg,#e5e8df,#d9e2d3);position:relative;overflow:hidden}.map:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(25deg,transparent 0 34px,rgba(255,255,255,.35) 35px 37px);transform:rotate(-5deg)}.pin{position:absolute;background:var(--clay);color:white;padding:7px 9px;border-radius:99px;font-size:11px;z-index:1;box-shadow:0 5px 12px #9996}.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cat{background:var(--paper);padding:15px;border-radius:18px;border:1px solid var(--line)}.cat strong{display:block;font-size:20px;margin:5px 0}
+.insight{border-left:4px solid var(--sage)} .topicgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.topic{padding:15px;border-radius:18px;background:#eee9f2;text-align:left}.topic:nth-child(2n){background:#f1e4dc}.topic span{font-size:25px;display:block;margin-bottom:8px}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--sage2);display:grid;place-items:center;font-size:30px}.profilehead{display:flex;align-items:center;gap:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:var(--paper2);border-radius:16px;padding:13px}.stat b{font-size:22px;display:block}
+.bars div{margin:12px 0}.bars label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.chart{height:150px;display:flex;align-items:end;gap:7px;padding:10px 3px 0}.bar{flex:1;background:#b7c9b6;border-radius:8px 8px 3px 3px;min-height:15px;position:relative}.bar span{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-size:9px;color:var(--muted)}
+.radar{height:210px;position:relative;display:grid;place-items:center}.radar svg{width:190px;height:190px}.dashboard-tabs{display:flex;gap:6px}.dashboard-tabs button{background:#eee9df;padding:8px 11px;border-radius:999px;font-size:11px}.dashboard-tabs button.active{background:var(--sage);color:white}
+.chat{display:flex;flex-direction:column;gap:12px}.bubble{max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px}.ai{background:var(--paper)}.me{background:var(--sage2);align-self:flex-end}.chatinput{position:sticky;bottom:0;background:rgba(247,243,234,.95);padding:10px 0}.chatinput form{display:flex;gap:7px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:7px}.chatinput input{border:0;outline:0;background:none;flex:1;padding:7px}
+.modal{position:absolute;inset:0;background:rgba(46,50,44,.35);z-index:40;display:none;align-items:flex-end}.modal.show{display:flex}.sheet{background:var(--paper);width:100%;border-radius:28px 28px 0 0;padding:20px 18px 28px;max-height:85%;overflow:auto}.handle{width:42px;height:5px;border-radius:99px;background:#ddd6c9;margin:0 auto 18px}.modes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.mode{background:#f0ece3;border-radius:15px;padding:11px 3px;text-align:center;font-size:11px}.mode b{font-size:20px;display:block;margin-bottom:4px}.mood{display:flex;gap:10px;margin:14px 0}.mood button{width:42px;height:42px;border-radius:14px;background:#f0ece3;font-size:20px}.mood button.selected{background:var(--sage2);outline:2px solid var(--sage)}
+textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:17px;padding:14px;background:#fffefa;outline:none;resize:vertical}.tagselect{display:flex;gap:8px;align-items:center;margin:10px 0;font-size:12px}
+.detailtop{display:flex;align-items:center;gap:10px;margin-bottom:20px}.back{background:none;font-size:25px}.photo{height:125px;border-radius:18px;background:linear-gradient(135deg,#d5ded0,#ead8cc);display:grid;place-items:center;font-size:40px}.photos{display:grid;grid-template-columns:1fr 1fr;gap:9px}.context div{padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.settings .setting{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)}.toggle{width:46px;height:27px;background:#d7d4ca;border-radius:99px;padding:3px}.toggle i{display:block;width:21px;height:21px;border-radius:50%;background:white}.toggle.on{background:var(--sage)}.toggle.on i{margin-left:19px}
+.toast{position:absolute;left:50%;bottom:94px;transform:translateX(-50%);background:#3d463f;color:white;padding:10px 15px;border-radius:99px;font-size:12px;z-index:60;display:none}
+.sectionlink{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line)}.sectionlink:last-child{border:0}
+
+    .phone-island {
+      position: fixed;
+      z-index: 50;
+      width: 116px;
+      height: 30px;
+      background: #252522;
+      border-radius: 0 0 18px 18px;
+      top: max(0px, calc((100vh - min(860px, calc(100vh - 32px))) / 2));
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .phone-island span {
+      display: block;
+      width: 42px;
+      height: 4px;
+      border-radius: 4px;
+      background: #454540;
+      margin: 8px auto 0;
+    }
+
+    /* Persistent quick-record composer */
+    .quick-composer {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 76px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px;
+      border-radius: 22px;
+      background: rgba(255, 253, 248, .94);
+      border: 1px solid rgba(98, 105, 91, .13);
+      box-shadow: 0 10px 26px rgba(65, 63, 54, .10);
+      backdrop-filter: blur(18px);
+    }
+    .quick-main {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      border: 0;
+      outline: 0;
+      background: #f4f1e9;
+      border-radius: 16px;
+      padding: 0 13px;
+      font: inherit;
+      color: var(--text);
+    }
+    .quick-main::placeholder { color: #aaa99f; }
+    .quick-action {
+      height: 40px;
+      min-width: 40px;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      color: #6e7566;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+      padding: 0 8px;
+    }
+    .quick-action:hover { background: #eef0e9; }
+    .quick-action .ico { display:block; font-size:17px; line-height:18px; margin-bottom:1px; }
+    .quick-action .label { display:block; font-size:10px; }
+    .bottom-tabs { z-index: 40; }
+
+    /* Today photo-memory / moments layout */
+    .memory-photos {
+      display: grid;
+      grid-template-columns: 1.35fr .825fr;
+      grid-template-rows: 86px 86px;
+      gap: 5px;
+      margin: 12px 0 14px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .memory-photos .photo {
+      position: relative;
+      overflow: hidden;
+      background: #d9d7ce;
+    }
+    .memory-photos .photo:first-child { grid-row: 1 / 3; }
+    .memory-photos .photo span {
+      position:absolute; inset:0;
+      display:flex; align-items:flex-end;
+      padding:8px;
+      color:white;
+      font-size:11px;
+      font-weight:600;
+      text-shadow:0 1px 6px rgba(0,0,0,.35);
+      background: linear-gradient(transparent 45%, rgba(0,0,0,.28));
+    }
+    .memory-photos .p1 { background: linear-gradient(135deg,#aebda4,#e0c3a7 55%,#9a9f86); }
+    .memory-photos .p2 { background: linear-gradient(145deg,#d6c1ad,#b8c7b0); }
+    .memory-photos .p3 { background: linear-gradient(145deg,#b9c3cf,#dfb9aa 60%,#c9c1a8); }
+
+    @media (max-width: 600px) {
+      body { overflow: auto; background: var(--bg); }
+      .phone-island { display:none; }
+      .app-shell {
+        width: 100vw;
+        height: 100vh;
+        min-height: 0;
+        max-height: none;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div class="app">
+<main id="content" class="content"></main>
+<nav class="nav">
+<button data-tab="today">☀️<span>今天</span></button>
+<button data-tab="timeline">◷<span>时间线</span></button>
+<button class="fab" id="fab">＋</button>
+<button data-tab="chat">◌<span>对话</span></button>
+<button data-tab="me">♡<span>我</span></button>
+</nav>
+
+<div class="modal" id="recordModal">
+ <div class="sheet">
+  <div class="handle"></div>
+  <div class="row"><h2>记下这一刻</h2><button class="iconbtn" id="closeRecord">✕</button></div>
+  <div class="modes">
+   <button class="mode" data-mode="photo"><b>📷</b>拍照</button><button class="mode"><b>🎤</b>语音</button><button class="mode"><b>📍</b>位置</button><button class="mode"><b>🏷️</b>标签</button><button class="mode"><b>📝</b>日记</button>
+  </div>
+  <div class="tiny" style="margin-top:17px">快捷心情</div>
+  <div class="mood"><button>😊</button><button>😢</button><button>😡</button><button>😴</button><button>🤔</button></div>
+  <textarea id="recordText" placeholder="记下点什么..."></textarea>
+  <div class="tagselect">✨ AI 识别：<button class="chip active" id="typeChip">运动记录</button><span class="tiny">点击可修改</span></div>
+  <button class="btn" style="width:100%" id="saveRecord">记下</button>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const mock={
+ fragments:[
+  {time:"09:15",e:"🏃",text:"跑步 5km，今天状态很好",type:"运动"},
+  {time:"12:30",e:"🍜",text:"和同事吃了拉面，新开的那家终于不用排队了",type:"美食"},
+  {time:"15:00",e:"😊",text:"下午阳光很好，心情不错",type:"心情"},
+  {time:"18:40",e:"📚",text:"读完《三体》，还是觉得很震撼",type:"阅读"},
+  {time:"21:30",e:"📝",text:"和小明聊了很久，他准备换工作了",type:"关系"}
+ ],
+ memories:[
+  {year:"一年前 · 2025.08.30",text:"第一次去了镰仓，江之电真的和灌篮高手里一模一样",meta:"📷 3 张 · 😊 9/10 · 📍 镰仓"},
+  {year:"两年前 · 2024.08.30",text:"入职第一天，紧张又期待",meta:"😊 7/10 · 📍 北京朝阳"}
+ ],
+ cats:[["😊","心情",234],["🏃","运动",89],["📝","日记",67],["📷","照片",892],["📚","阅读",45],["👥","关系",156],["✈️","旅行",34],["🍜","美食",78]]
+};
+let state={tab:"today",view:"stream",screen:null,chatTopic:null,records:[...mock.fragments]};
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(t){$("#toast").textContent=t;$("#toast").style.display="block";setTimeout(()=>$("#toast").style.display="none",1600)}
+function nav(){ $$(".nav [data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===state.tab)) }
+function render(){nav(); let el=$("#content"); el.innerHTML=state.screen?renderScreen():state.tab==="today"?today():state.tab==="timeline"?timeline():state.tab==="chat"?chat():me(); el.scrollTop=0; bind()}
+function sectionTitle(t,sub=""){return `<div class="row" style="margin:5px 2px 12px"><div><h2>${t}</h2>${sub?`<div class="muted">${sub}</div>`:""}</div></div>`}
+function fragmentList(items=state.records.slice(0,3)){return items.map((x,i)=>`<div class="frag"><div class="fragtime">${x.time}</div><div class="emoji">${x.e}</div><div class="grow"><b>${x.text}</b><div class="tiny">${x.type}</div></div><span class="muted">›</span></div>`).join("")}
+function today(){
+ return `<div class="hero"><h1>8月30日 <span style="font-weight:400">周六</span></h1><div class="weather">☀️ 晴 · 28°C · 北京朝阳</div></div>
+ <div class="card memory" data-action="memories"><div class="year">📅 那年今日</div>${mock.memories.map(m=>`<div style="margin:12px 0"><div class="year">${m.year}</div><div class="quote">“${m.text}”</div><div class="tiny" style="margin-top:7px">${m.meta}</div></div>`).join("")}<div class="tiny" style="text-align:right">查看全部 ›</div></div>
+ ${sectionTitle("今天的碎片",`${state.records.length} 块拼图`)}
+ <div class="card listcard">${fragmentList()}</div>
+ <div class="card lav"><div class="row"><div><div class="tiny">💡 每日一问</div><h3 style="margin-top:6px">今天最开心的一件事是什么？</h3></div><span>♡</span></div><button class="btn small" data-action="daily">回答一下</button></div>
+ <div class="card insight"><div class="tiny">✨ AI 发现</div><p><b>你最近每次运动后心情都特别好。</b></p><p class="muted">运动似乎是你最稳定的快乐来源。</p><div class="chips"><button class="chip" data-action="accurate">觉得准</button><button class="chip" data-action="chatInsight">展开聊聊</button></div></div>
+ <div style="height:8px"></div>`;
+}
+function timeline(){
+ let views=[["stream","时间流"],["calendar","日历"],["map","地图"],["category","分类"]];
+ return `<div class="search"><span>🔍</span><input id="search" placeholder="搜索记忆..." value="${state.q||""}"><button data-action="search">⌕</button></div>
+ <div class="subnav">${views.map(v=>`<button class="${state.view===v[0]?"active":""}" data-view="${v[0]}">${v[1]}</button>`).join("")}</div>
+ ${state.view==="stream"?timelineStream():state.view==="calendar"?calendar():state.view==="map"?mapView():category()}`;
+}
+function timelineStream(){
+ return `<div class="muted">全部记忆 · 按时间倒序</div>${["今天 · 8月30日 · 3 条","昨天 · 8月29日 · 2 条","8月28日 · 周四 · 5 条"].map((d,di)=>`<div class="timeline-day">${d}</div><div class="card listcard">${fragmentList(di===0?state.records.slice(0,3):di===1?mock.fragments.slice(3,5):mock.fragments.slice(0,2))}</div>`).join("")}<div class="tiny" style="text-align:center;margin:18px">↑ 继续向上滑动加载更早的记录</div>`;
+}
+function calendar(){
+ let days=["一","二","三","四","五","六","日"], nums=[...Array(31)].map((_,i)=>i+1);
+ return `<div class="card"><div class="row"><button class="iconbtn">‹</button><b>2026年8月</b><button class="iconbtn">›</button></div><div class="calendar" style="margin-top:12px">${days.map(x=>`<div class="calhead">${x}</div>`).join("")}${nums.map(n=>`<button class="day ${n%3===0?"has":""} ${n===30?"today":""}" data-day="${n}">${n}</button>`).join("")}</div></div><div class="card"><b>8月30日 周六 · 3 条记录</b>${fragmentList()}</div>`;
+}
+function mapView(){return `<div class="map"><div class="pin" style="left:25%;top:40%">北京 · 156</div><div class="pin" style="left:65%;top:28%">东京 · 12</div><div class="pin" style="left:50%;top:65%">上海 · 23</div><div class="pin" style="left:72%;top:70%">镰仓 · 3</div><div class="pin" style="left:18%;top:72%">杭州 · 8</div></div><div class="card"><div class="stats"><div class="stat"><b>6</b><span class="tiny">城市</span></div><div class="stat"><b>3</b><span class="tiny">国家</span></div><div class="stat"><b>892</b><span class="tiny">足迹</span></div></div></div><div class="card"><b>📍 镰仓 · 3 条记录</b><p>2025.08.30　“第一次去了镰仓，江之电真的和灌篮高手里一模一样”</p><p>2025.08.30　📷 江之电</p><p>2025.08.31　📷 镰仓大佛</p></div>`}
+function category(){return `<div class="catgrid">${mock.cats.map(c=>`<button class="cat" data-cat="${c[1]}"><span>${c[0]} ${c[1]}</span><strong>${c[2]}</strong><div class="progress"><i style="width:${Math.min(95,c[2]/10)}%"></i></div><div class="tiny" style="margin-top:6px">点击查看</div></button>`).join("")}</div>`}
+function chat(){
+ let intro=state.chatTopic?`<div class="card sage"><div class="tiny">正在探索</div><h2>${state.chatTopic}</h2><p class="muted">这是一场关于你的对话。你可以随时改变话题。</p></div>`:`<div style="padding:8px 2px 18px"><h1>和自己聊聊</h1><p class="muted">我会从你的碎片里，陪你看看自己。</p></div>`;
+ let msgs=state.chatTopic?topicMessages(state.chatTopic):`<div class="chat"><div class="bubble ai">你好。这里不是一个普通的 AI 聊天，而是和你自己的记录聊聊。<br><br>你可以问我：“我最近过得怎么样？”、“什么事情让我开心？”或者“我是一个什么样的人？”</div><div class="bubble ai">我也可以从<strong>记忆检索 → 数据分析 → 自我探索 → 主动洞察</strong>一路陪你深入。</div></div>`;
+ let topics=[["🪞","我的性格"],["👥","我的关系"],["🌱","我的成长"],["🌤️","情绪规律"],["🧭","人生阶段"],["💛","价值观"],["☀️","我的一天"],["🔭","未来的我"]];
+ return `${intro}${!state.chatTopic?`<div class="topicgrid">${topics.map(t=>`<button class="topic" data-topic="${t[1]}"><span>${t[0]}</span><b>${t[1]}</b><div class="tiny">开始探索 ›</div></button>`).join("")}</div>`:""}<div style="margin-top:18px">${msgs}</div><div class="chatinput"><form id="chatForm"><input id="chatInput" placeholder="问问关于你的任何事..."><button class="btn small">发送</button></form></div>`;
+}
+function topicMessages(t){
+ const map={"我的性格":`你的记录里，“好奇”和“创造”出现得很频繁。你倾向先独处消化，再和少数重要的人分享。一个有趣的地方是：你并不是不喜欢社交，而是更偏好深度连接。<br><br>你觉得这个描述像你吗？`,
+"我的关系":`“妈妈”是你记录里出现最多的人之一，而且相关记录的情绪均值很高。你似乎很看重稳定、长期的连接。<br><br>如果只看最近一年，你和哪些人的关系发生了变化？`,
+"我的成长":`过去一年，你的运动从偶尔变成了习惯，阅读也保持稳定。你似乎不是靠突然爆发，而是靠小幅、持续的积累改变自己。`,
+"情绪规律":`你的情绪基线约为 7.3。周中更容易出现低谷，而运动后的情绪通常明显回升。平均恢复时间约 1.5 天。`,
+"人生阶段":`从你的记录看，最近一年像是“重新建立自己的生活秩序”阶段：工作、运动、关系和兴趣都在重新找到节奏。`,
+"价值观":`你的高分记录里，“连接”“自由”“体验”反复出现。相比单纯的成就，你似乎更在意做这件事时是否真的有感觉。`,
+"我的一天":`你典型的一天从相对安静的上午开始，午间有社交，下午容易产生记录，晚上更愿意写下完整想法。`,
+"未来的我":`如果保持现在的趋势，你可能会越来越偏向深度关系、稳定运动和持续学习。真正值得继续观察的是：当工作压力升高时，你能否继续保护这些底层习惯。`};
+ return `<div class="chat"><div class="bubble ai">${map[t]||"让我从你的记录里再看看。"} </div><div class="bubble me">我想再深入一点。</div><div class="bubble ai">好。你可以告诉我一个最近让你印象很深的瞬间，我会把它和过去的记录放在一起看。</div></div>`;
+}
+function me(){
+ return `<div class="profilehead"><div class="avatar">🪴</div><div><h1>我的</h1><div class="muted">关于我的一切，都在这里。</div></div></div>
+ <div class="card sage"><div class="tiny">我的画像 · 更新于今天</div><h2 style="margin-top:7px">重视家庭、热爱运动的内向型创造者。</h2><p>你对生活保持好奇，核心生活圈子稳定精简，也越来越清楚什么让自己真正开心。</p><button class="btn small" data-screen="profile">查看完整画像</button></div>
+ <div class="catgrid">${[
+ ["😊","情绪画像","基线 7.3","emotion"],["🏃","身体画像","运动 12 次","body"],["📚","兴趣画像","本月读完 2 本","interest"],["🏠","生活画像","作息趋稳","life"],["👥","关系画像","核心圈 3 人","relation"],["📈","成长画像","目标完成 68%","growth"]
+ ].map(x=>`<button class="cat" data-screen="${x[3]}"><span>${x[0]} ${x[1]}</span><strong style="font-size:15px">${x[2]}</strong><div class="tiny">查看详情 ›</div></button>`).join("")}</div>
+ <div class="card insight"><div class="tiny">✨ AI 近期发现</div><p><b>你开始运动后的 14 个月里，情绪波动幅度缩小了 40%。</b></p><p class="muted">运动已经成为你情绪稳定的底层支撑。</p><button class="chip" data-action="chatInsight">展开聊聊</button></div>
+ <div class="card">${["📊 个人仪表盘","📖 我的人生故事","📦 回顾报告","⚙️ 设置"].map((x,i)=>`<button class="sectionlink" data-screen="${["dashboard","story","reports","settings"][i]}"><b>${x}</b><span>›</span></button>`).join("")}</div>`;
+}
+function back(title){return `<div class="detailtop"><button class="back" data-action="back">‹</button><div><h2>${title}</h2><div class="tiny">拼图 · 看见完整的我</div></div></div>`}
+function profile(){return `${back("我的画像")}<div class="card"><div class="tiny">基于 2,847 条记录 · 更新于今天</div><h2 style="margin-top:8px">你是一个重视家庭、热爱运动的内向型创造者。</h2><p>你对生活保持好奇，核心生活圈子稳定精简。</p><div class="radar"><svg viewBox="0 0 200 200"><polygon points="100,15 176,70 147,160 53,160 24,70" fill="#dce7d8" stroke="#7f9b82" stroke-width="2"/><polygon points="100,40 150,76 130,135 70,135 50,76" fill="none" stroke="#b9c7b6"/><text x="92" y="13" font-size="10">内向</text><text x="174" y="70" font-size="10">好奇</text><text x="145" y="172" font-size="10">自律</text><text x="38" y="172" font-size="10">共情</text><text x="5" y="70" font-size="10">冒险</text></svg></div><button class="btn small" data-screen="mbti">查看数据 MBTI</button></div><div class="catgrid">${[
+["😊","情绪画像","基线 7.3","emotion"],["🏃","身体画像","运动习惯稳定","body"],["📚","兴趣画像","偏好科幻","interest"],["🏠","生活画像","作息趋稳","life"],["👥","关系画像","核心圈 3人","relation"],["📈","成长画像","目标 68%","growth"]].map(x=>`<button class="cat" data-screen="${x[3]}"><span>${x[0]} ${x[1]}</span><strong style="font-size:15px">${x[2]}</strong><div class="tiny">查看详情 ›</div></button>`).join("")}</div>`}
+function mbti(){return `${back("🧠 数据 MBTI")}<div class="card lav"><div class="tiny">基于 2,847 条行为记录推导</div><div style="font-size:46px;font-weight:800;letter-spacing:8px;margin:15px 0">INFJ</div><h3>提倡者 · 仅作为数据观察</h3><p class="muted">连续谱而不是标签。它描述的是你的行为数据，不是心理诊断。</p></div><div class="card bars">${[["I","E",78],["N","S",68],["F","T",62],["J","P",72]].map(x=>`<div><label><b>${x[0]}</b><span>${x[2]}%</span><b>${x[1]}</b></label><div class="progress"><i style="width:${x[2]}%"></i></div></div>`).join("")}</div><div class="card"><h3>为什么是 INFJ？</h3><p>你的记录显示出较高的独处恢复倾向、长期思考、价值驱动的决策以及稳定的计划习惯。</p><button class="btn small" data-action="chatTopic" data-topic="我的性格">和 AI 聊聊</button></div>`}
+function dimension(kind){
+ let d={emotion:["😊 情绪画像","7.3 / 10","比上月 ↑ 0.4","什么让你开心","运动、和家人通话、旅行"],body:["🏃 身体画像","12 次","比上月 ↑ 3 次","你的身体节奏","跑步已成为稳定习惯"],interest:["📚 兴趣画像","2 本","本月读完","你最近在看什么","科幻、心理学、历史"],life:["🏠 生活画像","趋稳","最近 30 天","你的生活节奏","作息比过去更稳定"],relation:["👥 关系画像","核心圈 3 人","互动最密切：妈妈","你的关系圈","家人是你最稳定的情绪来源"],growth:["📈 成长画像","68%","年度目标完成度","你正在成长什么","运动习惯、潜水、阅读"]}[kind];
+ return `${back(d[0])}<div class="chips"><button class="chip active">近30天</button><button class="chip">近1年</button><button class="chip">全部</button></div><div class="card"><div class="tiny">${d[2]}</div><div style="font-size:32px;font-weight:800;margin:7px 0">${d[1]}</div><div class="chart">${[50,72,58,80,64,90,76,86,68,94,80,88].map((h,i)=>`<div class="bar" style="height:${h}%"><span>${i+1}</span></div>`).join("")}</div></div><div class="card"><h3>✨ ${d[3]}</h3><p>${d[4]}。这些只是从记录中看到的线索，你可以判断它是否准确。</p></div><div class="card insight"><div class="tiny">AI 洞察</div><p>你的这个维度和其他维度之间存在明显关联。记录越多，看到的规律会越清晰。</p><button class="btn small" data-action="chatTopic" data-topic="${d[0].slice(2,6)}">和 AI 聊聊</button></div>`}
+function relation(){return `${back("👥 关系画像")}<div class="card"><div style="height:220px;position:relative;display:grid;place-items:center"><div class="avatar" style="background:#dce7d8">我</div><div class="avatar" style="position:absolute;left:12%;top:20%">👩</div><div class="avatar" style="position:absolute;right:12%;top:25%">👨</div><div class="avatar" style="position:absolute;left:20%;bottom:8%">🙂</div><div class="avatar" style="position:absolute;right:18%;bottom:8%">🧑</div></div><div class="tiny">● 核心圈 3人　○ 重要圈 5人　· 一般 12人</div></div><div class="card"><div class="stats"><div class="stat"><b>156</b><span class="tiny">妈妈 · 提及</span></div><div class="stat"><b>9.1</b><span class="tiny">情绪关联</span></div><div class="stat"><b>47</b><span class="tiny">小明 · 提及</span></div></div></div><div class="card"><h3>👩 妈妈</h3><p>你和妈妈的互动以视频通话和寄送食物为主，每次相关记录的情绪都在 8 分以上。</p><button class="btn small" data-screen="person">查看所有记录</button></div>`}
+function person(){return `${back("👩 妈妈")}<div class="card"><div class="profilehead"><div class="avatar">👩</div><div><h2>妈妈</h2><div class="muted">提及 156 次 · 核心圈 · 情绪关联 9.1</div></div></div></div><div class="card"><h3>和妈妈相关的记录</h3>${mock.fragments.map(x=>`<div class="frag"><div class="fragtime">08.${20+Math.floor(Math.random()*9)}</div><div class="grow">${x.e} ${x.text}</div></div>`).join("")}</div><div class="card insight"><h3>AI 总结</h3><p>妈妈是你记录中出现最多的人，也是你情绪最高的关联对象。你似乎用美食作为和妈妈连接的方式。</p><button class="btn small" data-action="chatTopic" data-topic="我的关系">和 AI 聊聊我和妈妈</button></div>`}
+function dashboard(){return `${back("📊 个人仪表盘")}<div class="dashboard-tabs">${["近7天","近30天","近1年","全部"].map((x,i)=>`<button class="${i===1?"active":""}">${x}</button>`).join("")}</div><div class="card"><h3>综合状态</h3><div class="radar"><svg viewBox="0 0 200 200"><polygon points="100,18 174,70 145,160 55,160 26,70" fill="#eee9f2" stroke="#b8adc9" stroke-width="2"/><polygon points="100,42 151,77 128,137 72,137 49,77" fill="#dce7d8"/></svg></div></div><div class="stats"><div class="stat"><b>7.3</b><span class="tiny">情绪</span></div><div class="stat"><b>12</b><span class="tiny">运动</span></div><div class="stat"><b>18</b><span class="tiny">阅读</span></div></div><div class="card"><h3>记录节奏</h3><div class="chart">${[40,65,50,90,72,80,55,88,68,92].map((h,i)=>`<div class="bar" style="height:${h}%"><span>${i+1}</span></div>`).join("")}</div></div>`}
+function story(){return `${back("📖 我的人生故事")}<div class="card clay"><div class="tiny">从毕业到现在</div><h2>一个慢慢成为自己的故事</h2><p>2023 年 7 月，你大学毕业。那天你写下“终于结束了，不知道该开心还是害怕”。</p></div>${[["2023","新的开始","毕业后进入互联网公司，最初充满新鲜感。"],["2024","转折","看到同事跑马拉松，你也开始跑步，从 2 公里慢慢跑到 10 公里。"],["2025","重新选择","你开始更认真地记录关系、兴趣和自己的感受。"],["2026","更完整的我","运动成为习惯，你也越来越清楚什么让自己真正开心。"]].map(x=>`<div class="card"><div class="tiny">${x[0]}</div><h3>${x[1]}</h3><p>${x[2]}</p></div>`).join("")}<div class="card insight"><b>这不是一条简单的时间线。</b><p class="muted">AI 会尝试从你的碎片里寻找转折、因果和你成为现在这个自己的过程。</p></div>`}
+function reports(){return `${back("📦 回顾报告")}<div class="card sage"><div class="tiny">本周回顾 · 8.24 — 8.30</div><h2>这周你留下了 12 块碎片</h2><div class="stats"><div class="stat"><b>7.8</b><span class="tiny">心情均值</span></div><div class="stat"><b>15km</b><span class="tiny">跑步</span></div><div class="stat"><b>8</b><span class="tiny">照片</span></div></div></div><div class="card"><h3>情绪曲线</h3><div class="chart">${[75,52,62,70,78,92,84].map((h,i)=>`<div class="bar" style="height:${h}%"><span>${"一二三四五六日"[i]}</span></div>`).join("")}</div></div><div class="card insight"><h3>💡 AI 观察</h3><p>周三加班后你选择了周四去跑步，情绪从 5.2 回升到 8.1——运动是你有效的情绪恢复方式。</p></div><div class="card"><h3>📅 8月回顾</h3><p>这个月你留下了 <b>42</b> 块碎片，情绪均值 7.3，比上月 ↑ 0.4。</p><button class="btn small" data-screen="yearReport">查看年度 Life Wrapped</button></div>`}
+function yearReport(){return `<div class="hero" style="text-align:center;padding-top:25px"><div style="font-size:28px">✨ 2026 我的一年 ✨</div><p class="muted">这一年，你留下了 1,247 块碎片。</p></div><div class="card sage" style="text-align:center"><div style="font-size:44px;font-weight:800">1,247</div><div>个瞬间，拼出了一个更完整的自己。</div></div><div class="stats"><div class="stat"><b>892</b><span class="tiny">照片</span></div><div class="stat"><b>423km</b><span class="tiny">跑步</span></div><div class="stat"><b>18</b><span class="tiny">本书</span></div></div><div class="card"><h3>💬 年度关键词</h3><div class="chips"><span class="chip">成长</span><span class="chip">自律</span><span class="chip">旅行</span><span class="chip">咖啡</span><span class="chip">跑步</span><span class="chip">东京</span></div></div><div class="card clay"><h3>📈 你的变化</h3><p>从年初到年末，你越来越偏向深度连接；运动从偶尔变成了习惯；你越来越清楚什么让自己真正开心。</p></div><button class="btn" style="width:100%" data-action="share">生成分享卡片</button>`}
+function settings(){return `${back("⚙️ 设置")}<div class="card settings"><div class="setting"><div><b>隐私锁</b><div class="tiny">Face ID / 指纹</div></div><button class="toggle on"><i></i></button></div><div class="setting"><div><b>每日一问</b><div class="tiny">每天 21:00</div></div><button class="toggle on"><i></i></button></div><div class="setting"><div><b>那年今日</b><div class="tiny">每天 09:00</div></div><button class="toggle on"><i></i></button></div><div class="setting"><div><b>智能提醒</b><div class="tiny">基于场景触发</div></div><button class="toggle"><i></i></button></div></div><div class="card">${["🎨 主题与外观","🔐 数据加密","📤 导出数据 · JSON / PDF / Markdown","🗑️ 删除所有数据"].map(x=>`<button class="sectionlink" data-action="setting">${x}<span>›</span></button>`).join("")}</div>`}
+function detail(){
+ return `${back("记录详情")}<div class="card"><div class="tiny">2026.08.30 周六 · 12:30</div><h2 style="margin-top:10px">和同事吃了拉面，新开的那家终于不用排队了，味道不错！</h2><div class="photos"><div class="photo">🍜</div><div class="photo">📷</div></div><p>😊 心情 8/10</p></div><div class="card context"><h3>上下文</h3><div>📍 北京朝阳 · 三里屯</div><div>🌡️ 晴 32°C</div><div>🎵 周杰伦 - 晴天</div><div>🚶 今日步数 8,432</div></div><div class="card"><div class="chips"><span class="chip">美食</span><span class="chip">同事</span><span class="chip">AI分类：美食记录</span></div></div><div class="card"><h3>追记</h3><textarea placeholder="现在再看，觉得..."></textarea><button class="btn small" style="margin-top:8px" data-action="toast">保存追记</button></div>`;
+}
+function memories(){return `${back("📅 那年今日 · 8月30日")}${mock.memories.map(m=>`<div class="card"><div class="tiny">${m.year}</div><h3 style="margin-top:9px">“${m.text}”</h3><div class="tiny">${m.meta}</div><div style="margin-top:12px"><textarea placeholder="现在再看，觉得..."></textarea></div></div>`).join("")}<div class="card insight"><h3>8月30日对你来说</h3><p>AI 发现：8月30日在你的生命中似乎总是“新开始”的日子——2024 年入职，2025 年第一次出国。</p></div>`}
+function renderScreen(){let m={profile,mbti,emotion:()=>dimension("emotion"),body:()=>dimension("body"),interest:()=>dimension("interest"),life:()=>dimension("life"),relation,person,growth:()=>dimension("growth"),dashboard,story,reports,yearReport,settings,detail,memories};return (m[state.screen]||today)()}
+function bind(){
+ $$("[data-tab]").forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;state.screen=null;render()});
+ $$("[data-view]").forEach(b=>b.onclick=()=>{state.view=b.dataset.view;render()});
+ $$("[data-screen]").forEach(b=>b.onclick=()=>{state.screen=b.dataset.screen;render()});
+ $$("[data-topic]").forEach(b=>b.onclick=()=>{state.tab="chat";state.screen=null;state.chatTopic=b.dataset.topic;render()});
+ $$("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action,b));
+ $$(".mood button").forEach(b=>b.onclick=()=>{$$(".mood button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+ $("#chatForm")?.addEventListener("submit",e=>{e.preventDefault();let v=$("#chatInput").value.trim();if(v){state.chatTopic=null;toast("已收到：AI 正在从你的记录里寻找答案");$("#chatInput").value=""}});
+ $$(".toggle").forEach(t=>t.onclick=()=>t.classList.toggle("on"));
+ $$(".day").forEach(d=>d.onclick=()=>toast(`8月${d.dataset.day}日：${d.dataset.day%2?"有":"没有"}记录`));
+ $$(".cat").forEach(c=>c.onclick=()=>c.dataset.cat&&toast(`已打开「${c.dataset.cat}」分类`));
+ $("#search")?.addEventListener("input",e=>state.q=e.target.value);
+}
+function action(a,b){
+ if(a==="memories"){state.screen="memories";render()}
+ if(a==="daily"){openRecord("今天最开心的一件事是：")}
+ if(a==="accurate"){toast("已记录反馈：觉得准")}
+ if(a==="chatInsight"){state.tab="chat";state.screen=null;state.chatTopic="情绪规律";render()}
+ if(a==="chatTopic"){state.tab="chat";state.screen=null;state.chatTopic=b.dataset.topic||"我的性格";render()}
+ if(a==="back"){state.screen=null;render()}
+ if(a==="toast"){toast("已保存追记")}
+ if(a==="share"){toast("分享卡片已生成（原型）")}
+ if(a==="setting"){toast("这是可交互的原型入口")}
+}
+function openRecord(prefill=""){ $("#recordText").value=prefill;$("#recordModal").classList.add("show")}
+$("#fab").onclick=()=>openRecord();$("#closeRecord").onclick=()=>$("#recordModal").classList.remove("show");
+$("#saveRecord").onclick=()=>{let text=$("#recordText").value.trim()||"此刻的心情不错";let mood=$(".mood button.selected")?.textContent||"📝";state.records.unshift({time:"现在",e:mood,text,type:"随手记"});$("#recordModal").classList.remove("show");state.tab="today";state.screen=null;toast("已记下这一块拼图");render()};
+$$(".mode").forEach(m=>m.onclick=()=>toast(m.textContent.trim()+"功能已打开（原型）"));
+render();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('quickRecordInput');
+  if (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (typeof openRecordSheet === 'function') openRecordSheet(this.value);
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>

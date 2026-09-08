@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/layout';
+import { Link } from 'expo-router';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -52,6 +53,12 @@ export default function HomeScreen() {
             Welcome to Expo
           </ThemedText>
         </ThemedView>
+
+        {__DEV__ && (
+          <Link href="/dev/theme-test">
+            <Text className="text-primary">Theme Test</Text>
+          </Link>
+        )}
 
         <ThemedText
           className="font-mono text-muted-foreground"
