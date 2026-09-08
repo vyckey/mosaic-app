@@ -1,46 +1,51 @@
-import { vars } from 'nativewind';
+import { type Theme } from '@/theme';
 
-import { darkTheme, lightTheme, type MosaicTheme } from '@/theme';
+export function toCssVariables(theme: Theme) {
+  const { colors } = theme;
 
-const toCssVariables = (theme: MosaicTheme) => ({
-  '--background': theme.background,
-  '--foreground': theme.foreground,
+  return {
+    '--color-background': colors.background,
+    '--color-background-muted': colors.backgroundMuted,
+    '--color-background-subtle': colors.backgroundSubtle,
 
-  '--card': theme.card,
-  '--card-foreground': theme.cardForeground,
+    '--color-surface': colors.surface,
+    '--color-surface-muted': colors.surfaceMuted,
 
-  '--popover': theme.popover,
-  '--popover-foreground': theme.popoverForeground,
+    '--color-text': colors.text,
+    '--color-text-muted': colors.textMuted,
+    '--color-text-subtle': colors.textSubtle,
+    '--color-text-disabled': colors.textDisabled,
 
-  '--primary': theme.primary,
-  '--primary-foreground': theme.primaryForeground,
+    '--color-primary': colors.primary,
+    '--color-primary-foreground': colors.primaryForeground,
 
-  '--secondary': theme.secondary,
-  '--secondary-foreground': theme.secondaryForeground,
+    '--color-secondary': colors.secondary,
+    '--color-secondary-foreground': colors.secondaryForeground,
 
-  '--accent': theme.accent,
-  '--accent-foreground': theme.accentForeground,
+    '--color-border': colors.border,
+    '--color-border-muted': colors.borderMuted,
+    '--color-border-strong': colors.borderStrong,
 
-  '--muted': theme.muted,
-  '--muted-foreground': theme.mutedForeground,
+    '--color-focus': colors.focus,
 
-  '--destructive': theme.destructive,
+    '--color-success': colors.success,
+    '--color-success-foreground': colors.successForeground,
+    '--color-success-muted': colors.successMuted,
+    '--color-success-muted-foreground': colors.successMutedForeground,
 
-  '--border': theme.border,
-  '--input': theme.input,
-  '--ring': theme.ring,
+    '--color-warning': colors.warning,
+    '--color-warning-foreground': colors.warningForeground,
+    '--color-warning-muted': colors.warningMuted,
+    '--color-warning-muted-foreground': colors.warningMutedForeground,
 
-  '--success': theme.success,
-  '--success-foreground': theme.successForeground,
+    '--color-danger': colors.danger,
+    '--color-danger-foreground': colors.dangerForeground,
+    '--color-danger-muted': colors.dangerMuted,
+    '--color-danger-muted-foreground': colors.dangerMutedForeground,
 
-  '--warning': theme.warning,
-  '--warning-foreground': theme.warningForeground,
-
-  '--info': theme.info,
-  '--info-foreground': theme.infoForeground,
-});
-
-export const config = {
-  light: vars(toCssVariables(lightTheme)),
-  dark: vars(toCssVariables(darkTheme)),
-};
+    '--color-info': colors.info,
+    '--color-info-foreground': colors.infoForeground,
+    '--color-info-muted': colors.infoMuted,
+    '--color-info-muted-foreground': colors.infoMutedForeground,
+  };
+}

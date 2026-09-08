@@ -3,21 +3,17 @@ import { useColorScheme } from 'react-native';
 
 import { darkTheme, lightTheme } from '@/theme';
 
-function rgb(value: string) {
-  return `rgb(${value})`;
-}
-
 export default function AppTabs() {
   const scheme = useColorScheme();
   const theme = scheme === 'dark' ? darkTheme : lightTheme;
 
   return (
     <NativeTabs
-      backgroundColor={rgb(theme.background)}
-      indicatorColor={rgb(theme.secondary)}
+      backgroundColor={theme.colors.background}
+      indicatorColor={theme.colors.secondary}
       labelStyle={{
         selected: {
-          color: rgb(theme.primary),
+          color: theme.colors.primary,
         },
       }}
     >

@@ -50,7 +50,7 @@ export default function ExploreScreen() {
       style={[
         styles.scrollView,
         {
-          backgroundColor: rgb(theme.background),
+          backgroundColor: rgb(theme.colors.background),
         },
       ]}
       contentInset={insets}
@@ -76,7 +76,7 @@ export default function ExploreScreen() {
                 </ThemedText>
 
                 <SymbolView
-                  tintColor={rgb(theme.foreground)}
+                  tintColor={rgb(theme.colors.primaryForeground)}
                   name={{
                     ios: 'arrow.up.right.square',
                     android: 'link',

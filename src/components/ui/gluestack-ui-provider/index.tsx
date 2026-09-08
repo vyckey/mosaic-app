@@ -1,10 +1,12 @@
+import { VariableContextProvider } from 'nativewind';
 import React, { useEffect } from 'react';
-import { Appearance, useColorScheme, View, ViewProps } from 'react-native';
+import { Appearance, useColorScheme, View, type ViewProps } from 'react-native';
 
 import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
 import { ToastProvider } from '@gluestack-ui/core/toast/creator';
 
-import { config } from './config';
+import { darkTheme, lightTheme } from '@/theme';
+import { toCssVariables } from './config';
 
 export type ModeType = 'light' | 'dark' | 'system';
 
@@ -32,21 +34,24 @@ export function GluestackUIProvider({
         : 'light'
       : mode;
 
+  const theme = effectiveMode === 'dark' ? darkTheme : lightTheme;
+
   return (
-    <View
-      style={[
-        config[effectiveMode],
-        {
-          flex: 1,
-          height: '100%',
-          width: '100%',
-        },
-        style,
-      ]}
-    >
-      <OverlayProvider>
-        <ToastProvider>{children}</ToastProvider>
-      </OverlayProvider>
-    </View>
+    <VariableContextProvider value={toCssVariables(theme)}>
+      <View
+        style={[
+          {
+            flex: 1,
+            width: '100%',
+            height: '100%',
+          },
+          style,
+        ]}
+      >
+        <OverlayProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </OverlayProvider>
+      </View>
+    </VariableContextProvider>
   );
 }
