@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>拼图 Mosaic · 生活记录</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background:
+          radial-gradient(1100px 700px at 15% 8%, #e8edde, transparent 60%),
+          radial-gradient(900px 650px at 88% 92%, #d2dcc4, transparent 55%),
+          #d9e0cd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC',
+          'Microsoft YaHei', sans-serif;
+        padding: 24px;
+      }
+      ::selection {
+        background: #d5e2c9;
+      }
+      button {
+        transition:
+          transform 0.15s ease,
+          background 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      button:active {
+        transform: scale(0.96);
+      }
+      #content > * {
+        animation: rise 0.35s ease both;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      /* 手机外壳 */
+      .phone-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+      .side-btn {
+        position: absolute;
+        width: 5px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #aebba0, #c9d4bd);
+        box-shadow: 0 1px 3px rgba(60, 70, 50, 0.25);
+        z-index: -1;
+      }
+      .sb1 {
+        left: -14px;
+        top: 19%;
+        height: 4%;
+      }
+      .sb2 {
+        left: -14px;
+        top: 26%;
+        height: 7.5%;
+      }
+      .sb3 {
+        left: -14px;
+        top: 34.5%;
+        height: 7.5%;
+      }
+      .sb4 {
+        right: -14px;
+        top: 28%;
+        height: 10.5%;
+      }
+      .phone-frame {
+        width: min(440px, calc((100vh - 48px) * 39 / 82));
+        aspect-ratio: 390 / 820;
+        background: var(--bg);
+        border-radius: 58px;
+        box-shadow:
+          0 2px 6px rgba(64, 74, 55, 0.12),
+          0 36px 70px rgba(64, 74, 55, 0.28),
+          0 0 0 9px #cbd5be,
+          0 0 0 11px #f0f3e9,
+          0 0 0 12px #e0e6d5;
+        overflow: hidden;
+        position: relative;
+      }
+      .phone-frame .status-bar {
+        height: 56px;
+        background: transparent;
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 30px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: 0.3px;
+        position: relative;
+        z-index: 30;
+      }
+      .phone-frame .status-bar span:first-child {
+        font-weight: 500;
+      }
+      .phone-frame .status-bar .notch {
+        width: 132px;
+        height: 32px;
+        background: #232823;
+        border-radius: 20px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 12px;
+        z-index: 0;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55);
+      }
+      .app {
+        height: calc(100% - 56px);
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        position: relative;
+      }
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 18px 118px;
+        scroll-behavior: smooth;
+      }
+      .content::-webkit-scrollbar {
+        width: 0;
+      }
+
+      /* 颜色主题 - 更柔和高级 */
+      :root {
+        --bg: #f1f4ea;
+        --paper: #fcfdf8;
+        --paper2: #edf1e5;
+        --ink: #2b3329;
+        --muted: #7d8779;
+        --sage: #74956d;
+        --sage-deep: #5a7a53;
+        --sage2: #e1ebd9;
+        --sage3: #b6c9aa;
+        --clay: #c09077;
+        --lav: #c2bcd3;
+        --line: #dfe5d5;
+        --shadow: 0 12px 28px rgba(74, 88, 64, 0.1);
+        --radius: 22px;
+      }
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.5px;
+        margin: 0 0 5px;
+        font-weight: 650;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 6px;
+        font-weight: 600;
+      }
+      p {
+        line-height: 1.6;
+        margin: 6px 0;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .tiny {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid rgba(188, 199, 170, 0.45);
+        border-radius: var(--radius);
+        padding: 18px;
+        box-shadow: var(--shadow);
+        margin: 12px 0;
+      }
+      .soft {
+        background: var(--paper2);
+      }
+      .sage {
+        background: var(--sage2);
+      }
+      .lav {
+        background: #ece9f3;
+      }
+      .clay {
+        background: #f2e6dc;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .chips {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        background: #e8eee0;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 12px;
+        border: 0;
+        cursor: pointer;
+      }
+      .chip.active {
+        background: linear-gradient(135deg, var(--sage), var(--sage-deep));
+        color: white;
+      }
+      .btn {
+        background: linear-gradient(135deg, var(--sage), var(--sage-deep));
+        color: white;
+        border-radius: 14px;
+        padding: 11px 16px;
+        font-weight: 600;
+        border: 0;
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(90, 122, 83, 0.28);
+      }
+      .btn.ghost {
+        background: #e7ede0;
+        color: var(--ink);
+        box-shadow: none;
+      }
+      .btn.small {
+        padding: 7px 12px;
+        font-size: 12px;
+      }
+      .iconbtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: #eaf0e1;
+        display: grid;
+        place-items: center;
+        border: 0;
+        cursor: pointer;
+      }
+
+      /* 那年今日 - 朋友圈样式 */
+      .memory-photos {
+        display: grid;
+        grid-template-columns: 1.35fr 0.825fr;
+        grid-template-rows: 86px 86px;
+        gap: 6px;
+        margin: 10px 0 14px;
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .memory-photos .photo {
+        position: relative;
+        overflow: hidden;
+        background: #d4dcc9;
+        border-radius: 12px;
+      }
+      .memory-photos .photo:first-child {
+        grid-row: 1 / 3;
+      }
+      .memory-photos .photo span {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        padding: 10px;
+        color: white;
+        font-size: 12px;
+        font-weight: 500;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.25));
+        border-radius: 12px;
+      }
+      .memory-photos .p1 {
+        background: linear-gradient(135deg, #a7bf9f, #d6c4a0 55%, #8fa887);
+      }
+      .memory-photos .p2 {
+        background: linear-gradient(145deg, #ccd8be, #a9c2a1);
+      }
+      .memory-photos .p3 {
+        background: linear-gradient(145deg, #b4c5cb, #dcc2b1 60%, #b3bfa0);
+      }
+      .memory-photos .photo .badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        padding: 3px 10px;
+        border-radius: 40px;
+        font-size: 11px;
+        color: white;
+      }
+
+      /* 底部快速记录器 */
+      .quick-composer {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 78px;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 8px;
+        border-radius: 28px;
+        background: rgba(255, 253, 248, 0.92);
+        border: 1px solid rgba(120, 128, 110, 0.15);
+        box-shadow: 0 8px 24px rgba(65, 63, 54, 0.1);
+        backdrop-filter: blur(18px);
+      }
+      .quick-main {
+        flex: 1;
+        min-width: 0;
+        height: 42px;
+        border: 0;
+        outline: 0;
+        background: var(--paper);
+        border-radius: 30px;
+        padding: 0 16px;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .quick-main:focus {
+        box-shadow: 0 0 0 2px rgba(116, 149, 109, 0.25);
+      }
+      .quick-main::placeholder {
+        color: var(--muted);
+      }
+      .quick-action {
+        height: 42px;
+        min-width: 42px;
+        border: 0;
+        border-radius: 30px;
+        background: transparent;
+        color: #5b6459;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .quick-action:hover {
+        background: var(--sage2);
+      }
+      .quick-action .ico {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+      .quick-action .label {
+        font-size: 9px;
+        opacity: 0.7;
+      }
+
+      /* 底部导航 */
+      .nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        background: rgba(255, 253, 248, 0.92);
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        padding: 6px 6px 10px;
+        z-index: 20;
+        backdrop-filter: blur(16px);
+      }
+      .nav button {
+        background: none;
+        color: #92988f;
+        font-size: 11px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: 0;
+        cursor: pointer;
+      }
+      .nav button.active {
+        color: var(--sage);
+        font-weight: 600;
+      }
+      .fab {
+        width: 50px !important;
+        height: 50px;
+        margin: auto;
+        border-radius: 50% !important;
+        background: var(--sage) !important;
+        color: white !important;
+        font-size: 28px !important;
+        box-shadow: 0 8px 20px rgba(94, 122, 98, 0.3);
+        font-weight: 300;
+      }
+
+      /* modal & 其他 */
+      .modal {
+        position: absolute;
+        inset: 0;
+        background: rgba(40, 44, 38, 0.35);
+        z-index: 40;
+        display: none;
+        align-items: flex-end;
+        backdrop-filter: blur(8px);
+      }
+      .modal.show {
+        display: flex;
+      }
+      .sheet {
+        background: var(--paper);
+        width: 100%;
+        border-radius: 32px 32px 0 0;
+        padding: 20px 18px 28px;
+        max-height: 80%;
+        overflow: auto;
+        animation: sheetUp 0.3s ease both;
+      }
+      @keyframes sheetUp {
+        from { transform: translateY(100%); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .handle {
+        width: 44px;
+        height: 5px;
+        border-radius: 99px;
+        background: var(--sage3);
+        margin: 0 auto 16px;
+      }
+      .modes {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .mode {
+        background: var(--sage2);
+        border-radius: 15px;
+        padding: 10px 4px;
+        text-align: center;
+        font-size: 11px;
+        border: 0;
+        cursor: pointer;
+      }
+      .mode:hover {
+        background: var(--sage3);
+      }
+      .mode b {
+        font-size: 22px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .mood {
+        display: flex;
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .mood button {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: var(--sage2);
+        font-size: 20px;
+        border: 0;
+        cursor: pointer;
+      }
+      .mood button.selected {
+        background: var(--sage2);
+        outline: 2px solid var(--sage);
+      }
+      textarea {
+        width: 100%;
+        min-height: 90px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        background: var(--paper2);
+        outline: none;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+      textarea:focus {
+        border-color: var(--sage);
+        background: var(--paper);
+        box-shadow: 0 0 0 3px rgba(116, 149, 109, 0.15);
+      }
+      .toast {
+        position: absolute;
+        left: 50%;
+        bottom: 94px;
+        transform: translateX(-50%) translateY(12px);
+        background: var(--sage-deep);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 500;
+        z-index: 60;
+        display: none;
+        animation: toastIn 0.25s ease both;
+        box-shadow: 0 6px 16px rgba(74, 88, 64, 0.3);
+      }
+      @keyframes toastIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+
+      /* 其他组件 */
+      .frag {
+        display: flex;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+      .frag:last-child {
+        border: 0;
+      }
+      .emoji {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: var(--sage2);
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+      }
+      .fragtime {
+        font-size: 12px;
+        color: var(--muted);
+        width: 45px;
+      }
+      .grow {
+        flex: 1;
+      }
+      .progress {
+        height: 8px;
+        background: var(--sage2);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .progress i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--sage3), var(--sage));
+        border-radius: 99px;
+      }
+      .progress i {
+        display: block;
+        height: 100%;
+        background: var(--sage);
+        border-radius: 99px;
+      }
+      .subnav {
+        display: flex;
+        gap: 6px;
+        overflow: auto;
+        margin: 12px 0;
+      }
+      .subnav button {
+        white-space: nowrap;
+        background: var(--paper2);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        border: 0;
+        cursor: pointer;
+      }
+      .subnav button:hover {
+        background: var(--sage3);
+      }
+      .subnav button.active {
+        background: var(--sage);
+        color: white;
+      }
+      .timeline-day {
+        margin: 18px 0 6px;
+        font-weight: 600;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .stat {
+        background: var(--paper2);
+        border-radius: 16px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stat b {
+        font-size: 22px;
+        display: block;
+      }
+
+      @media (max-width: 540px) {
+        body {
+          padding: 0;
+          background: var(--bg);
+          align-items: stretch;
+        }
+        .phone-wrap {
+          width: 100vw;
+          height: 100vh;
+        }
+        .side-btn { display: none; }
+        .phone-frame {
+          width: 100% !important;
+          height: 100vh !important;
+          aspect-ratio: unset;
+          border-radius: 0;
+          box-shadow: none;
+          border: 0;
+        }
+        .phone-frame .status-bar {
+          padding: 12px 18px 0;
+        }
+        .content {
+          padding-bottom: 78px;
+        }
+        .quick-composer {
+          bottom: 56px;
+          left: 8px;
+          right: 8px;
+        }
+        .nav {
+          height: 56px;
+          padding: 6px 6px 4px;
+        }
+        .nav span {
+          font-size: 9px !important;
+        }
+        .fab {
+          width: 44px !important;
+          height: 44px;
+          font-size: 24px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-wrap">
+      <div class="side-btn sb1"></div>
+      <div class="side-btn sb2"></div>
+      <div class="side-btn sb3"></div>
+      <div class="side-btn sb4"></div>
+      <div class="phone-frame">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span style="display: flex; gap: 6px">📶 📶 🔋</span>
+          <div class="notch"></div>
+        </div>
+      <div class="app">
+        <main id="content" class="content"></main>
+
+        <!-- 常驻快速记录器 -->
+        <div class="quick-composer">
+          <input
+            class="quick-main"
+            id="quickRecordInput"
+            placeholder="记下点什么..."
+          />
+          <button class="quick-action" id="quickMood">
+            <span class="ico">😊</span><span class="label">心情</span>
+          </button>
+          <button class="quick-action" id="quickPhoto">
+            <span class="ico">📷</span><span class="label">拍照</span>
+          </button>
+          <button class="quick-action" id="quickAudio">
+            <span class="ico">🎤</span><span class="label">录音</span>
+          </button>
+        </div>
+
+        <nav class="nav">
+          <button data-tab="today">☀️<span>今天</span></button>
+          <button data-tab="timeline">◷<span>时间线</span></button>
+          <button class="fab" id="fab">＋</button>
+          <button data-tab="chat">◌<span>对话</span></button>
+          <button data-tab="me">♡<span>我</span></button>
+        </nav>
+
+        <div class="modal" id="recordModal">
+          <div class="sheet">
+            <div class="handle"></div>
+            <div class="row">
+              <h2>记下这一刻</h2>
+              <button class="iconbtn" id="closeRecord">✕</button>
+            </div>
+            <div class="modes">
+              <button class="mode" data-mode="photo"><b>📷</b>拍照</button>
+              <button class="mode"><b>🎤</b>语音</button>
+              <button class="mode"><b>📍</b>位置</button>
+              <button class="mode"><b>🏷️</b>标签</button>
+              <button class="mode"><b>📝</b>日记</button>
+            </div>
+            <div class="tiny" style="margin-top: 14px">快捷心情</div>
+            <div class="mood">
+              <button>😊</button><button>😢</button><button>😡</button
+              ><button>😴</button><button>🤔</button>
+            </div>
+            <textarea id="recordText" placeholder="记下点什么..."></textarea>
+            <div
+              class="tagselect"
+              style="
+                display: flex;
+                gap: 8px;
+                margin: 10px 0;
+                font-size: 12px;
+                align-items: center;
+              "
+            >
+              ✨ AI 识别：<button class="chip active" id="typeChip">
+                运动记录</button
+              ><span class="tiny">点击可修改</span>
+            </div>
+            <button class="btn" style="width: 100%" id="saveRecord">
+              记下
+            </button>
+          </div>
+        </div>
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+      const mock = {
+        fragments: [
+          {
+            time: '09:15',
+            e: '🏃',
+            text: '跑步 5km，今天状态很好',
+            type: '运动',
+          },
+          {
+            time: '12:30',
+            e: '🍜',
+            text: '和同事吃了拉面，新开的那家终于不用排队了',
+            type: '美食',
+          },
+          {
+            time: '15:00',
+            e: '😊',
+            text: '下午阳光很好，心情不错',
+            type: '心情',
+          },
+          {
+            time: '18:40',
+            e: '📚',
+            text: '读完《三体》，还是觉得很震撼',
+            type: '阅读',
+          },
+          {
+            time: '21:30',
+            e: '📝',
+            text: '和小明聊了很久，他准备换工作了',
+            type: '关系',
+          },
+        ],
+        memories: [
+          {
+            year: '一年前 · 2025.08.30',
+            text: '第一次去了镰仓，江之电真的和灌篮高手里一模一样',
+            meta: '📷 3 张 · 😊 9/10 · 📍 镰仓',
+          },
+          {
+            year: '两年前 · 2024.08.30',
+            text: '入职第一天，紧张又期待',
+            meta: '😊 7/10 · 📍 北京朝阳',
+          },
+        ],
+        cats: [
+          ['😊', '心情', 234],
+          ['🏃', '运动', 89],
+          ['📝', '日记', 67],
+          ['📷', '照片', 892],
+          ['📚', '阅读', 45],
+          ['👥', '关系', 156],
+          ['✈️', '旅行', 34],
+          ['🍜', '美食', 78],
+        ],
+      };
+      let state = {
+        tab: 'today',
+        view: 'stream',
+        screen: null,
+        chatTopic: null,
+        records: [...mock.fragments],
+      };
+
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)];
+      function esc(s) {
+        return s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;',
+            })[c],
+        );
+      }
+      function toast(t) {
+        $('#toast').textContent = t;
+        $('#toast').style.display = 'block';
+        setTimeout(() => ($('#toast').style.display = 'none'), 1600);
+      }
+      function nav() {
+        $$('.nav [data-tab]').forEach((b) =>
+          b.classList.toggle('active', b.dataset.tab === state.tab),
+        );
+      }
+      function render() {
+        nav();
+        let el = $('#content');
+        el.innerHTML = state.screen
+          ? renderScreen()
+          : state.tab === 'today'
+            ? today()
+            : state.tab === 'timeline'
+              ? timeline()
+              : state.tab === 'chat'
+                ? chat()
+                : me();
+        el.scrollTop = 0;
+        bind();
+      }
+      function sectionTitle(t, sub = '') {
+        return `<div class="row" style="margin:5px 2px 12px"><div><h2>${t}</h2>${sub ? `<div class="muted">${sub}</div>` : ''}</div></div>`;
+      }
+      function fragmentList(items = state.records.slice(0, 3)) {
+        return items
+          .map(
+            (x, i) =>
+              `<div class="frag"><div class="fragtime">${x.time}</div><div class="emoji">${x.e}</div><div class="grow"><b>${x.text}</b><div class="tiny">${x.type}</div></div><span class="muted">›</span></div>`,
+          )
+          .join('');
+      }
+
+      function today() {
+        return `<div class="hero"><h1>8月30日 <span style="font-weight:400">周六</span></h1><div class="weather" style="display:flex;gap:8px;color:var(--muted);font-size:13px">☀️ 晴 · 28°C · 北京朝阳</div></div>
+  <div class="card memory" data-action="memories" style="background:linear-gradient(145deg,var(--paper),var(--sage2));">
+    <div class="year" style="font-size:12px;color:var(--muted);margin-bottom:8px;">📅 那年今日 · 朋友圈</div>
+    <div class="memory-photos">
+      <div class="photo p1"><span>🌊 镰仓 · 江之电</span><span class="badge">❤️ 9</span></div>
+      <div class="photo p2"><span>🍜 镰仓 · 美食</span><span class="badge">💬 4</span></div>
+      <div class="photo p3"><span>⛩️ 镰仓大佛</span><span class="badge">📷 2</span></div>
+    </div>
+    <div style=”padding:4px 2px; font-size:14px; font-weight:500; color:var(--ink);”>”第一次去了镰仓，江之电真的和灌篮高手里一模一样”</div>
+    <div class=”tiny” style=”margin-top:6px; display:flex; justify-content:space-between;”><span>📷 3张 · 😊 9/10 · 📍 镰仓</span><span>2025.08.30</span></div>
+    <div style=”margin-top:14px; padding-top:12px; border-top:1px solid var(--line);”>
+      <div style=”font-size:13px; color:var(--muted);”>两年前 · 入职第一天，紧张又期待</div>
+      <div class="tiny">😊 7/10 · 📍 北京朝阳</div>
+    </div>
+    <div class="tiny" style="text-align:right;margin-top:8px;">查看全部 ›</div>
+  </div>
+  <div class="card listcard">
+    <div class="row" style="margin-bottom:2px;padding-bottom:12px;border-bottom:1px solid var(--line)">
+      <div>
+        <h2>今天的碎片</h2>
+        <div class="muted">${state.records.length} 块拼图</div>
+      </div>
+    </div>
+    ${fragmentList()}
+  </div>
+  <div class="card lav"><div class="row"><div><div class="tiny">💡 每日一问</div><h3 style="margin-top:6px">今天最开心的一件事是什么？</h3></div><span>♡</span></div><button class="btn small" data-action="daily">回答一下</button></div>
+  <div class="card insight" style="border-left:4px solid var(--sage);"><div class="tiny">✨ AI 发现</div><p><b>你最近每次运动后心情都特别好。</b></p><p class="muted">运动似乎是你最稳定的快乐来源。</p><div class="chips"><button class="chip" data-action="accurate">觉得准</button><button class="chip" data-action="chatInsight">展开聊聊</button></div></div>
+  <div style="height:8px"></div>`;
+      }
+
+      function timeline() {
+        let views = [
+          ['stream', '时间流'],
+          ['calendar', '日历'],
+          ['map', '地图'],
+          ['category', '分类'],
+        ];
+        return `<div style="display:flex;gap:8px;background:var(--paper);border:1px solid var(--line);padding:10px 14px;border-radius:15px;margin:6px 0 10px;" onFocus="this.style.borderColor='var(--sage)';this.style.boxShadow='0 0 0 3px rgba(116,149,109,.15)'" onBlur="this.style.borderColor='var(--line)';this.style.boxShadow='none'"><span>🔍</span><input id="search" placeholder="搜索记忆..." style="border:0;outline:0;background:transparent;flex:1;font-size:14px;color:var(--ink)" value="${state.q || ''}"><button data-action="search" style="border:0;background:none;">⌕</button></div>
+  <div class="subnav">${views.map((v) => `<button class="${state.view === v[0] ? 'active' : ''}" data-view="${v[0]}">${v[1]}</button>`).join('')}</div>
+  ${state.view === 'stream' ? timelineStream() : state.view === 'calendar' ? calendar() : state.view === 'map' ? mapView() : category()}`;
+      }
+      function timelineStream() {
+        return `<div class="muted">全部记忆 · 按时间倒序</div>${['今天 · 8月30日 · 3 条', '昨天 · 8月29日 · 2 条', '8月28日 · 周四 · 5 条'].map((d, di) => `<div class="timeline-day">${d}</div><div class="card listcard">${fragmentList(di === 0 ? state.records.slice(0, 3) : di === 1 ? mock.fragments.slice(3, 5) : mock.fragments.slice(0, 2))}</div>`).join('')}<div class="tiny" style="text-align:center;margin:18px">↑ 继续向上滑动加载更早的记录</div>`;
+      }
+      function calendar() {
+        let days = ['一', '二', '三', '四', '五', '六', '日'],
+          nums = [...Array(31)].map((_, i) => i + 1);
+        return `<div class="card"><div class="row"><button class="iconbtn">‹</button><b>2026年8月</b><button class="iconbtn">›</button></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-top:12px">${days.map((x) => `<div style="font-size:11px;color:var(--muted);padding:7px 0">${x}</div>`).join('')}${nums.map((n) => `<button class="day" style="height:39px;padding-top:8px;border-radius:10px;font-size:12px;position:relative;border:0;background:none;${n % 3 === 0 ? '' : ''}${n === 30 ? 'background:var(--sage);color:white;' : ''}" data-day="${n}">${n}</button>`).join('')}</div></div><div class="card"><b>8月30日 周六 · 3 条记录</b>${fragmentList()}</div>`;
+      }
+      function mapView() {
+        return `<div style="height:260px;border-radius:20px;background:linear-gradient(150deg,#e5e8df,#d9e2d3);position:relative;overflow:hidden;margin:8px 0;"><div style="position:absolute;background:var(--clay);color:white;padding:7px 10px;border-radius:99px;font-size:11px;box-shadow:0 5px 12px rgba(0,0,0,.3);left:25%;top:40%">北京 · 156</div><div style="position:absolute;background:var(--clay);color:white;padding:7px 10px;border-radius:99px;font-size:11px;box-shadow:0 5px 12px rgba(0,0,0,.3);left:65%;top:28%">东京 · 12</div><div style="position:absolute;background:var(--clay);color:white;padding:7px 10px;border-radius:99px;font-size:11px;box-shadow:0 5px 12px rgba(0,0,0,.3);left:50%;top:65%">上海 · 23</div><div style="position:absolute;background:var(--clay);color:white;padding:7px 10px;border-radius:99px;font-size:11px;box-shadow:0 5px 12px rgba(0,0,0,.3);left:72%;top:70%">镰仓 · 3</div><div style="position:absolute;background:var(--clay);color:white;padding:7px 10px;border-radius:99px;font-size:11px;box-shadow:0 5px 12px rgba(0,0,0,.3);left:18%;top:72%">杭州 · 8</div></div><div class="card"><div class="stats"><div class="stat"><b>6</b><span class="tiny">城市</span></div><div class="stat"><b>3</b><span class="tiny">国家</span></div><div class="stat"><b>892</b><span class="tiny">足迹</span></div></div></div><div class="card"><b>📍 镰仓 · 3 条记录</b><p>2025.08.30　“第一次去了镰仓，江之电真的和灌篮高手里一模一样”</p><p>2025.08.30　📷 江之电</p><p>2025.08.31　📷 镰仓大佛</p></div>`;
+      }
+      function category() {
+        return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${mock.cats.map((c) => `<button class="cat" style="background:var(--paper);padding:15px;border-radius:18px;border:1px solid var(--line);text-align:left;border:0;cursor:pointer;" data-cat="${c[1]}"><span>${c[0]} ${c[1]}</span><strong style="display:block;font-size:20px;margin:5px 0">${c[2]}</strong><div class="progress"><i style="width:${Math.min(95, c[2] / 10)}%"></i></div><div class="tiny" style="margin-top:6px">点击查看</div></button>`).join('')}</div>`;
+      }
+
+      function chat() {
+        let intro = state.chatTopic
+          ? `<div class="card sage"><div class="tiny">正在探索</div><h2>${state.chatTopic}</h2><p class="muted">这是一场关于你的对话。你可以随时改变话题。</p></div>`
+          : `<div style="padding:8px 2px 18px"><h1>和自己聊聊</h1><p class="muted">我会从你的碎片里，陪你看看自己。</p></div>`;
+        let msgs = state.chatTopic
+          ? topicMessages(state.chatTopic)
+          : `<div style="display:flex;flex-direction:column;gap:12px"><div style="max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px;background:var(--paper)">你好。这里不是一个普通的 AI 聊天，而是和你自己的记录聊聊。<br><br>你可以问我：“我最近过得怎么样？”、“什么事情让我开心？”或者“我是一个什么样的人？”</div><div style="max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px;background:var(--paper)">我也可以从<strong>记忆检索 → 数据分析 → 自我探索 → 主动洞察</strong>一路陪你深入。</div></div>`;
+        let topics = [
+          ['🪞', '我的性格'],
+          ['👥', '我的关系'],
+          ['🌱', '我的成长'],
+          ['🌤️', '情绪规律'],
+          ['🧭', '人生阶段'],
+          ['💛', '价值观'],
+          ['☀️', '我的一天'],
+          ['🔭', '未来的我'],
+        ];
+        return `${intro}${!state.chatTopic ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${topics.map((t) => `<button class="topic" style="padding:15px;border-radius:18px;background:var(--sage2);text-align:left;border:0;cursor:pointer;" data-topic="${t[1]}"><span style="font-size:25px;display:block;margin-bottom:8px">${t[0]}</span><b>${t[1]}</b><div class="tiny">开始探索 ›</div></button>`).join('')}</div>` : ''}<div style="margin-top:18px">${msgs}</div><div style="position:sticky;bottom:0;background:rgba(241,244,234,.95);padding:10px 0"><form id="chatForm" style="display:flex;gap:7px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:7px"><input id="chatInput" placeholder="问问关于你的任何事..." style="border:0;outline:0;background:none;flex:1;padding:7px;font-size:14px;color:var(--ink)"><button class="btn small">发送</button></form></div>`;
+      }
+      function topicMessages(t) {
+        const map = {
+          我的性格: `你的记录里，“好奇”和“创造”出现得很频繁。你倾向先独处消化，再和少数重要的人分享。一个有趣的地方是：你并不是不喜欢社交，而是更偏好深度连接。<br><br>你觉得这个描述像你吗？`,
+          我的关系: `“妈妈”是你记录里出现最多的人之一，而且相关记录的情绪均值很高。你似乎很看重稳定、长期的连接。<br><br>如果只看最近一年，你和哪些人的关系发生了变化？`,
+          我的成长: `过去一年，你的运动从偶尔变成了习惯，阅读也保持稳定。你似乎不是靠突然爆发，而是靠小幅、持续的积累改变自己。`,
+          情绪规律: `你的情绪基线约为 7.3。周中更容易出现低谷，而运动后的情绪通常明显回升。平均恢复时间约 1.5 天。`,
+          人生阶段: `从你的记录看，最近一年像是“重新建立自己的生活秩序”阶段：工作、运动、关系和兴趣都在重新找到节奏。`,
+          价值观: `你的高分记录里，“连接”“自由”“体验”反复出现。相比单纯的成就，你似乎更在意做这件事时是否真的有感觉。`,
+          我的一天: `你典型的一天从相对安静的上午开始，午间有社交，下午容易产生记录，晚上更愿意写下完整想法。`,
+          未来的我: `如果保持现在的趋势，你可能会越来越偏向深度关系、稳定运动和持续学习。真正值得继续观察的是：当工作压力升高时，你能否继续保护这些底层习惯。`,
+        };
+        return `<div style="display:flex;flex-direction:column;gap:12px"><div style="max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px;background:var(--paper)">${map[t] || '让我从你的记录里再看看。'} </div><div style="max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px;background:var(--sage2);align-self:flex-end">我想再深入一点。</div><div style="max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.6;font-size:14px;background:var(--paper)">好。你可以告诉我一个最近让你印象很深的瞬间，我会把它和过去的记录放在一起看。</div></div>`;
+      }
+
+      function me() {
+        return `<div style="display:flex;align-items:center;gap:14px"><div style="width:64px;height:64px;border-radius:50%;background:var(--sage2);display:grid;place-items:center;font-size:30px">🪴</div><div><h1>我的</h1><div class="muted">关于我的一切，都在这里。</div></div></div>
+  <div class="card sage"><div class="tiny">我的画像 · 更新于今天</div><h2 style="margin-top:7px">重视家庭、热爱运动的内向型创造者。</h2><p>你对生活保持好奇，核心生活圈子稳定精简，也越来越清楚什么让自己真正开心。</p><button class="btn small" data-screen="profile">查看完整画像</button></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${[
+    ['😊', '情绪画像', '基线 7.3', 'emotion'],
+    ['🏃', '身体画像', '运动 12 次', 'body'],
+    ['📚', '兴趣画像', '本月读完 2 本', 'interest'],
+    ['🏠', '生活画像', '作息趋稳', 'life'],
+    ['👥', '关系画像', '核心圈 3 人', 'relation'],
+    ['📈', '成长画像', '目标完成 68%', 'growth'],
+  ]
+    .map(
+      (x) =>
+        `<button class="cat" style="background:var(--paper);padding:15px;border-radius:18px;border:1px solid var(--line);text-align:left;border:0;cursor:pointer;" data-screen="${x[3]}"><span>${x[0]} ${x[1]}</span><strong style="display:block;font-size:15px;margin:5px 0">${x[2]}</strong><div class="tiny">查看详情 ›</div></button>`,
+    )
+    .join('')}</div>
+  <div class="card insight" style="border-left:4px solid var(--sage);"><div class="tiny">✨ AI 近期发现</div><p><b>你开始运动后的 14 个月里，情绪波动幅度缩小了 40%。</b></p><p class="muted">运动已经成为你情绪稳定的底层支撑。</p><button class="chip" data-action="chatInsight">展开聊聊</button></div>
+  <div class="card">${['📊 个人仪表盘', '📖 我的人生故事', '📦 回顾报告', '⚙️ 设置'].map((x, i) => `<button class="sectionlink" style="display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);width:100%;background:none;border:0;text-align:left;cursor:pointer;" data-screen="${['dashboard', 'story', 'reports', 'settings'][i]}"><b>${x}</b><span>›</span></button>`).join('')}</div>`;
+      }
+      function back(title) {
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="back" style="background:none;font-size:25px;border:0;cursor:pointer;" data-action="back">‹</button><div><h2>${title}</h2><div class="tiny">拼图 · 看见完整的我</div></div></div>`;
+      }
+      function profile() {
+        return `${back('我的画像')}<div class="card"><div class="tiny">基于 2,847 条记录 · 更新于今天</div><h2 style="margin-top:8px">你是一个重视家庭、热爱运动的内向型创造者。</h2><p>你对生活保持好奇，核心生活圈子稳定精简。</p><div style="height:210px;position:relative;display:grid;place-items:center"><svg viewBox="0 0 200 200" style="width:190px;height:190px"><polygon points="100,15 176,70 147,160 53,160 24,70" fill="#dde8da" stroke="#7a9b7d" stroke-width="2"/><polygon points="100,40 150,76 130,135 70,135 50,76" fill="none" stroke="#b9c7b6"/><text x="92" y="13" font-size="10">内向</text><text x="174" y="70" font-size="10">好奇</text><text x="145" y="172" font-size="10">自律</text><text x="38" y="172" font-size="10">共情</text><text x="5" y="70" font-size="10">冒险</text></svg></div><button class="btn small" data-screen="mbti">查看数据 MBTI</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${[
+          ['😊', '情绪画像', '基线 7.3', 'emotion'],
+          ['🏃', '身体画像', '运动习惯稳定', 'body'],
+          ['📚', '兴趣画像', '偏好科幻', 'interest'],
+          ['🏠', '生活画像', '作息趋稳', 'life'],
+          ['👥', '关系画像', '核心圈 3人', 'relation'],
+          ['📈', '成长画像', '目标 68%', 'growth'],
+        ]
+          .map(
+            (x) =>
+              `<button class="cat" style="background:var(--paper);padding:15px;border-radius:18px;border:1px solid var(--line);text-align:left;border:0;cursor:pointer;" data-screen="${x[3]}"><span>${x[0]} ${x[1]}</span><strong style="display:block;font-size:15px;margin:5px 0">${x[2]}</strong><div class="tiny">查看详情 ›</div></button>`,
+          )
+          .join('')}</div>`;
+      }
+      function mbti() {
+        return `${back('🧠 数据 MBTI')}<div class="card lav"><div class="tiny">基于 2,847 条行为记录推导</div><div style="font-size:46px;font-weight:800;letter-spacing:8px;margin:15px 0">INFJ</div><h3>提倡者 · 仅作为数据观察</h3><p class="muted">连续谱而不是标签。它描述的是你的行为数据，不是心理诊断。</p></div><div class="card">${[
+          ['I', 'E', 78],
+          ['N', 'S', 68],
+          ['F', 'T', 62],
+          ['J', 'P', 72],
+        ]
+          .map(
+            (x) =>
+              `<div style="margin:12px 0"><label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><b>${x[0]}</b><span>${x[2]}%</span><b>${x[1]}</b></label><div class="progress"><i style="width:${x[2]}%"></i></div></div>`,
+          )
+          .join(
+            '',
+          )}</div><div class="card"><h3>为什么是 INFJ？</h3><p>你的记录显示出较高的独处恢复倾向、长期思考、价值驱动的决策以及稳定的计划习惯。</p><button class="btn small" data-action="chatTopic" data-topic="我的性格">和 AI 聊聊</button></div>`;
+      }
+      function dimension(kind) {
+        let d = {
+          emotion: [
+            '😊 情绪画像',
+            '7.3 / 10',
+            '比上月 ↑ 0.4',
+            '什么让你开心',
+            '运动、和家人通话、旅行',
+          ],
+          body: [
+            '🏃 身体画像',
+            '12 次',
+            '比上月 ↑ 3 次',
+            '你的身体节奏',
+            '跑步已成为稳定习惯',
+          ],
+          interest: [
+            '📚 兴趣画像',
+            '2 本',
+            '本月读完',
+            '你最近在看什么',
+            '科幻、心理学、历史',
+          ],
+          life: [
+            '🏠 生活画像',
+            '趋稳',
+            '最近 30 天',
+            '你的生活节奏',
+            '作息比过去更稳定',
+          ],
+          relation: [
+            '👥 关系画像',
+            '核心圈 3 人',
+            '互动最密切：妈妈',
+            '你的关系圈',
+            '家人是你最稳定的情绪来源',
+          ],
+          growth: [
+            '📈 成长画像',
+            '68%',
+            '年度目标完成度',
+            '你正在成长什么',
+            '运动习惯、潜水、阅读',
+          ],
+        }[kind];
+        return `${back(d[0])}<div class="chips"><button class="chip active">近30天</button><button class="chip">近1年</button><button class="chip">全部</button></div><div class="card"><div class="tiny">${d[2]}</div><div style="font-size:32px;font-weight:800;margin:7px 0">${d[1]}</div><div style="height:150px;display:flex;align-items:end;gap:7px;padding:10px 3px 0">${[50, 72, 58, 80, 64, 90, 76, 86, 68, 94, 80, 88].map((h, i) => `<div style="flex:1;background:#b7c9b6;border-radius:8px 8px 3px 3px;min-height:15px;height:${h}%;position:relative"><span style="position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-size:9px;color:var(--muted)">${i + 1}</span></div>`).join('')}</div></div><div class="card"><h3>✨ ${d[3]}</h3><p>${d[4]}。这些只是从记录中看到的线索，你可以判断它是否准确。</p></div><div class="card insight" style="border-left:4px solid var(--sage);"><div class="tiny">AI 洞察</div><p>你的这个维度和其他维度之间存在明显关联。记录越多，看到的规律会越清晰。</p><button class="btn small" data-action="chatTopic" data-topic="${d[0].slice(2, 6)}">和 AI 聊聊</button></div>`;
+      }
+      function relation() {
+        return `${back('👥 关系画像')}<div class="card"><div style="height:220px;position:relative;display:grid;place-items:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--sage);display:grid;place-items:center;font-size:30px;color:white">我</div><div style="width:64px;height:64px;border-radius:50%;background:var(--sage3);display:grid;place-items:center;font-size:30px;position:absolute;left:12%;top:20%">👩</div><div style="width:64px;height:64px;border-radius:50%;background:var(--sage3);display:grid;place-items:center;font-size:30px;position:absolute;right:12%;top:25%">👨</div><div style="width:64px;height:64px;border-radius:50%;background:var(--paper2);display:grid;place-items:center;font-size:30px;position:absolute;left:20%;bottom:8%">🙂</div><div style="width:64px;height:64px;border-radius:50%;background:var(--paper2);display:grid;place-items:center;font-size:30px;position:absolute;right:18%;bottom:8%">🧑</div></div><div class="tiny">● 核心圈 3人，○ 重要圈 5人，· 一般 12人</div></div><div class="card"><div class="stats"><div class="stat"><b>156</b><span class="tiny">妈妈 · 提及</span></div><div class="stat"><b>9.1</b><span class="tiny">情绪关联</span></div><div class="stat"><b>47</b><span class="tiny">小明 · 提及</span></div></div></div><div class="card"><h3>👩 妈妈</h3><p>你和妈妈的互动以视频通话和寄送食物为主，每次相关记录的情绪都在 8 分以上。</p><button class="btn small" data-screen="person">查看所有记录</button></div>`;
+      }
+      function person() {
+        return `${back('👩 妈妈')}<div class="card"><div style="display:flex;align-items:center;gap:14px"><div style="width:64px;height:64px;border-radius:50%;background:var(--sage2);display:grid;place-items:center;font-size:30px">👩</div><div><h2>妈妈</h2><div class="muted">提及 156 次 · 核心圈 · 情绪关联 9.1</div></div></div></div><div class="card"><h3>和妈妈相关的记录</h3>${mock.fragments.map((x) => `<div class="frag"><div class="fragtime">08.${20 + Math.floor(Math.random() * 9)}</div><div class="grow">${x.e} ${x.text}</div></div>`).join('')}</div><div class="card insight" style="border-left:4px solid var(--sage);"><h3>AI 总结</h3><p>妈妈是你记录中出现最多的人，也是你情绪最高的关联对象。你似乎用美食作为和妈妈连接的方式。</p><button class="btn small" data-action="chatTopic" data-topic="我的关系">和 AI 聊聊我和妈妈</button></div>`;
+      }
+      function dashboard() {
+        return `${back('📊 个人仪表盘')}<div style="display:flex;gap:6px"><button class="chip active">近7天</button><button class="chip">近30天</button><button class="chip">近1年</button><button class="chip">全部</button></div><div class="card"><h3>综合状态</h3><div style="height:210px;position:relative;display:grid;place-items:center"><svg viewBox="0 0 200 200" style="width:190px;height:190px"><polygon points="100,18 174,70 145,160 55,160 26,70" fill="var(--sage2)" stroke="var(--sage3)" stroke-width="2"/><polygon points="100,42 151,77 128,137 72,137 49,77" fill="var(--sage)"/></svg></div></div><div class="stats"><div class="stat"><b>7.3</b><span class="tiny">情绪</span></div><div class="stat"><b>12</b><span class="tiny">运动</span></div><div class="stat"><b>18</b><span class="tiny">阅读</span></div></div><div class="card"><h3>记录节奏</h3><div style="height:150px;display:flex;align-items:end;gap:7px;padding:10px 3px 0">${[40, 65, 50, 90, 72, 80, 55, 88, 68, 92].map((h, i) => `<div style="flex:1;background:#b7c9b6;border-radius:8px 8px 3px 3px;min-height:15px;height:${h}%;position:relative"><span style="position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-size:9px;color:var(--muted)">${i + 1}</span></div>`).join('')}</div></div>`;
+      }
+      function story() {
+        return `${back('📖 我的人生故事')}<div class="card clay"><div class="tiny">从毕业到现在</div><h2>一个慢慢成为自己的故事</h2><p>2023 年 7 月，你大学毕业。那天你写下“终于结束了，不知道该开心还是害怕”。</p></div>${[
+          ['2023', '新的开始', '毕业后进入互联网公司，最初充满新鲜感。'],
+          [
+            '2024',
+            '转折',
+            '看到同事跑马拉松，你也开始跑步，从 2 公里慢慢跑到 10 公里。',
+          ],
+          ['2025', '重新选择', '你开始更认真地记录关系、兴趣和自己的感受。'],
+          [
+            '2026',
+            '更完整的我',
+            '运动成为习惯，你也越来越清楚什么让自己真正开心。',
+          ],
+        ]
+          .map(
+            (x) =>
+              `<div class="card"><div class="tiny">${x[0]}</div><h3>${x[1]}</h3><p>${x[2]}</p></div>`,
+          )
+          .join(
+            '',
+          )}<div class="card insight" style="border-left:4px solid var(--sage);"><b>这不是一条简单的时间线。</b><p class="muted">AI 会尝试从你的碎片里寻找转折、因果和你成为现在这个自己的过程。</p></div>`;
+      }
+      function reports() {
+        return `${back('📦 回顾报告')}<div class="card sage"><div class="tiny">本周回顾 · 8.24 — 8.30</div><h2>这周你留下了 12 块碎片</h2><div class="stats"><div class="stat"><b>7.8</b><span class="tiny">心情均值</span></div><div class="stat"><b>15km</b><span class="tiny">跑步</span></div><div class="stat"><b>8</b><span class="tiny">照片</span></div></div></div><div class="card"><h3>情绪曲线</h3><div style="height:150px;display:flex;align-items:end;gap:7px;padding:10px 3px 0">${[75, 52, 62, 70, 78, 92, 84].map((h, i) => `<div style="flex:1;background:#b7c9b6;border-radius:8px 8px 3px 3px;min-height:15px;height:${h}%;position:relative"><span style="position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-size:9px;color:var(--muted)">${'一二三四五六日'[i]}</span></div>`).join('')}</div></div><div class="card insight" style="border-left:4px solid var(--sage);"><h3>💡 AI 观察</h3><p>周三加班后你选择了周四去跑步，情绪从 5.2 回升到 8.1——运动是你有效的情绪恢复方式。</p></div><div class="card"><h3>📅 8月回顾</h3><p>这个月你留下了 <b>42</b> 块碎片，情绪均值 7.3，比上月 ↑ 0.4。</p><button class="btn small" data-screen="yearReport">查看年度 Life Wrapped</button></div>`;
+      }
+      function yearReport() {
+        return `<div style="text-align:center;padding-top:25px"><div style="font-size:28px">✨ 2026 我的一年 ✨</div><p class="muted">这一年，你留下了 1,247 块碎片。</p></div><div class="card sage" style="text-align:center"><div style="font-size:44px;font-weight:800">1,247</div><div>个瞬间，拼出了一个更完整的自己。</div></div><div class="stats"><div class="stat"><b>892</b><span class="tiny">照片</span></div><div class="stat"><b>423km</b><span class="tiny">跑步</span></div><div class="stat"><b>18</b><span class="tiny">本书</span></div></div><div class="card"><h3>💬 年度关键词</h3><div class="chips"><span class="chip">成长</span><span class="chip">自律</span><span class="chip">旅行</span><span class="chip">咖啡</span><span class="chip">跑步</span><span class="chip">东京</span></div></div><div class="card clay"><h3>📈 你的变化</h3><p>从年初到年末，你越来越偏向深度连接；运动从偶尔变成了习惯；你越来越清楚什么让自己真正开心。</p></div><button class="btn" style="width:100%" data-action="share">生成分享卡片</button>`;
+      }
+      function settings() {
+        return `${back('⚙️ 设置')}<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)"><div><b>隐私锁</b><div class="tiny">Face ID / 指纹</div></div><button class="toggle on" style="width:46px;height:27px;background:var(--sage);border-radius:99px;padding:3px;border:0;cursor:pointer"><i style="display:block;width:21px;height:21px;border-radius:50%;background:white;margin-left:19px"></i></button></div><div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)"><div><b>每日一问</b><div class="tiny">每天 21:00</div></div><button class="toggle on" style="width:46px;height:27px;background:var(--sage);border-radius:99px;padding:3px;border:0;cursor:pointer"><i style="display:block;width:21px;height:21px;border-radius:50%;background:white;margin-left:19px"></i></button></div><div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)"><div><b>那年今日</b><div class="tiny">每天 09:00</div></div><button class="toggle on" style="width:46px;height:27px;background:var(--sage);border-radius:99px;padding:3px;border:0;cursor:pointer"><i style="display:block;width:21px;height:21px;border-radius:50%;background:white;margin-left:19px"></i></button></div><div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)"><div><b>智能提醒</b><div class="tiny">基于场景触发</div></div><button class="toggle" style="width:46px;height:27px;background:var(--sage2);border-radius:99px;padding:3px;border:0;cursor:pointer"><i style="display:block;width:21px;height:21px;border-radius:50%;background:white"></i></button></div></div><div class="card">${['🎨 主题与外观', '🔐 数据加密', '📤 导出数据 · JSON / PDF / Markdown', '🗑️ 删除所有数据'].map((x) => `<button class="sectionlink" style="display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);width:100%;background:none;border:0;text-align:left;cursor:pointer;" data-action="setting">${x}<span>›</span></button>`).join('')}</div>`;
+      }
+      function renderScreen() {
+        let m = {
+          profile,
+          mbti,
+          emotion: () => dimension('emotion'),
+          body: () => dimension('body'),
+          interest: () => dimension('interest'),
+          life: () => dimension('life'),
+          relation,
+          person,
+          growth: () => dimension('growth'),
+          dashboard,
+          story,
+          reports,
+          yearReport,
+          settings,
+          detail: () => {
+            return `${back('记录详情')}<div class="card"><div class="tiny">2026.08.30 周六 · 12:30</div><h2 style="margin-top:10px">和同事吃了拉面，新开的那家终于不用排队了，味道不错！</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><div style="height:125px;border-radius:18px;background:linear-gradient(135deg,var(--sage2),var(--paper));display:grid;place-items:center;font-size:40px">🍜</div><div style="height:125px;border-radius:18px;background:linear-gradient(135deg,var(--sage2),var(--paper));display:grid;place-items:center;font-size:40px">📷</div></div><p>😊 心情 8/10</p></div><div class="card"><h3>上下文</h3><div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">📍 北京朝阳 · 三里屯</div><div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">🌡️ 晴 32°C</div><div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">🎵 周杰伦 - 晴天</div><div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">🚶 今日步数 8,432</div></div><div class="card"><div class="chips"><span class="chip">美食</span><span class="chip">同事</span><span class="chip">AI分类：美食记录</span></div></div><div class="card"><h3>追记</h3><textarea id="recallText" placeholder="现在再看，觉得..." style="width:100%;min-height:70px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--paper2);outline:none;resize:vertical;font-family:inherit;font-size:13px;color:var(--ink)"></textarea><button class="btn small" style="margin-top:8px" data-action="toast">保存追记</button></div>`;
+          },
+          memories: () => {
+            return `${back('📅 那年今日 · 8月30日')}${mock.memories.map((m) => `<div class="card"><div class="tiny">${m.year}</div><h3 style="margin-top:9px">“${m.text}”</h3><div class="tiny">${m.meta}</div><div style="margin-top:12px"><textarea placeholder="现在再看，觉得..."></textarea></div></div>`).join('')}<div class="card insight" style="border-left:4px solid var(--sage);"><h3>8月30日对你来说</h3><p>AI 发现：8月30日在你的生命中似乎总是“新开始”的日子——2024 年入职，2025 年第一次出国。</p></div>`;
+          },
+        };
+        return (m[state.screen] || today)();
+      }
+
+      function bind() {
+        $$('[data-tab]').forEach(
+          (b) =>
+            (b.onclick = () => {
+              state.tab = b.dataset.tab;
+              state.screen = null;
+              render();
+            }),
+        );
+        $$('[data-view]').forEach(
+          (b) =>
+            (b.onclick = () => {
+              state.view = b.dataset.view;
+              render();
+            }),
+        );
+        $$('[data-screen]').forEach(
+          (b) =>
+            (b.onclick = () => {
+              state.screen = b.dataset.screen;
+              render();
+            }),
+        );
+        $$('[data-topic]').forEach(
+          (b) =>
+            (b.onclick = () => {
+              state.tab = 'chat';
+              state.screen = null;
+              state.chatTopic = b.dataset.topic;
+              render();
+            }),
+        );
+        $$('[data-action]').forEach(
+          (b) => (b.onclick = () => action(b.dataset.action, b)),
+        );
+        $$('.mood button').forEach(
+          (b) =>
+            (b.onclick = () => {
+              $$('.mood button').forEach((x) => x.classList.remove('selected'));
+              b.classList.add('selected');
+            }),
+        );
+        $('#chatForm')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          let v = $('#chatInput').value.trim();
+          if (v) {
+            state.chatTopic = null;
+            toast('已收到：AI 正在从你的记录里寻找答案');
+            $('#chatInput').value = '';
+          }
+        });
+        $$('.toggle').forEach(
+          (t) => (t.onclick = () => t.classList.toggle('on')),
+        );
+        $$('.day').forEach(
+          (d) =>
+            (d.onclick = () =>
+              toast(
+                `8月${d.dataset.day}日：${d.dataset.day % 2 ? '有' : '没有'}记录`,
+              )),
+        );
+        $$('.cat').forEach(
+          (c) =>
+            (c.onclick = () =>
+              c.dataset.cat && toast(`已打开「${c.dataset.cat}」分类`)),
+        );
+        $('#search')?.addEventListener(
+          'input',
+          (e) => (state.q = e.target.value),
+        );
+        // 快速记录器
+        const quickInput = document.getElementById('quickRecordInput');
+        if (quickInput) {
+          quickInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const val = this.value.trim();
+              if (val) {
+                state.records.unshift({
+                  time: '现在',
+                  e: '📝',
+                  text: val,
+                  type: '随手记',
+                });
+                state.tab = 'today';
+                state.screen = null;
+                toast('已记下这一块拼图');
+                render();
+                this.value = '';
+              }
+            }
+          });
+        }
+        document
+          .getElementById('quickMood')
+          ?.addEventListener('click', function (e) {
+            e.preventDefault();
+            openRecord('😊 今天的心情...');
+          });
+        document
+          .getElementById('quickPhoto')
+          ?.addEventListener('click', function (e) {
+            e.preventDefault();
+            toast('📷 拍照功能已打开（原型）');
+          });
+        document
+          .getElementById('quickAudio')
+          ?.addEventListener('click', function (e) {
+            e.preventDefault();
+            toast('🎤 录音功能已打开（原型）');
+          });
+      }
+      function action(a, b) {
+        if (a === 'memories') {
+          state.screen = 'memories';
+          render();
+        }
+        if (a === 'daily') {
+          openRecord('今天最开心的一件事是：');
+        }
+        if (a === 'accurate') {
+          toast('已记录反馈：觉得准');
+        }
+        if (a === 'chatInsight') {
+          state.tab = 'chat';
+          state.screen = null;
+          state.chatTopic = '情绪规律';
+          render();
+        }
+        if (a === 'chatTopic') {
+          state.tab = 'chat';
+          state.screen = null;
+          state.chatTopic = b.dataset.topic || '我的性格';
+          render();
+        }
+        if (a === 'back') {
+          state.screen = null;
+          render();
+        }
+        if (a === 'toast') {
+          toast('已保存追记');
+        }
+        if (a === 'share') {
+          toast('分享卡片已生成（原型）');
+        }
+        if (a === 'setting') {
+          toast('这是可交互的原型入口');
+        }
+      }
+      function openRecord(prefill = '') {
+        $('#recordText').value = prefill;
+        $('#recordModal').classList.add('show');
+      }
+      $('#fab').onclick = () => openRecord();
+      $('#closeRecord').onclick = () =>
+        $('#recordModal').classList.remove('show');
+      $('#saveRecord').onclick = () => {
+        let text = $('#recordText').value.trim() || '此刻的心情不错';
+        let mood = $('.mood button.selected')?.textContent || '📝';
+        state.records.unshift({ time: '现在', e: mood, text, type: '随手记' });
+        $('#recordModal').classList.remove('show');
+        state.tab = 'today';
+        state.screen = null;
+        toast('已记下这一块拼图');
+        render();
+      };
+      $$('.mode').forEach(
+        (m) =>
+          (m.onclick = () =>
+            toast(m.textContent.trim() + '功能已打开（原型）')),
+      );
+      render();
+    </script>
+  </body>
+</html>

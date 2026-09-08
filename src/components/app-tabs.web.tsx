@@ -43,6 +43,8 @@ export default function AppTabs() {
 export function TabButton({
   children,
   isFocused,
+  // expo-router 58 的 slot ref 类型（函数组件 ref）与 RN Pressable ref（ReactNativeElement）不兼容，本文件未被引用，不转发 ref
+  ref: _slotRef,
   ...props
 }: TabTriggerSlotProps) {
   return (
@@ -78,7 +80,7 @@ export function CustomTabList(props: TabListProps) {
             <ThemedText className="primary">Docs</ThemedText>
 
             <SymbolView
-              tintColor={rgb(theme.foreground)}
+              tintColor={rgb(theme.colors.text)}
               name={{
                 ios: 'arrow.up.right.square',
                 web: 'link',
