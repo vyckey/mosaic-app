@@ -173,7 +173,7 @@ export function AuthFlow({ onComplete }: AuthFlowProps) {
     <View className="flex-1">
       <View
         className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
+        style={{ paddingTop: insets.top }}
       >
         {backAction && (
           <MosaicIconButton

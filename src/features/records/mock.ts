@@ -32,7 +32,7 @@ const mockAuthors: RecordsAuthor[] = [
 
 /**
  * Round-robin attach a mock author to each record (keeps an author already
- * set on the record) so every row shows avatar + username.
+ * set on the record); the feed row no longer renders it.
  */
 const withAuthors = (records: MosaicRecord[]): MosaicRecord[] =>
   records.map((record, index) => ({
@@ -43,7 +43,7 @@ const withAuthors = (records: MosaicRecord[]): MosaicRecord[] =>
 const baseRecords: MosaicRecord[] = [
   {
     id: 'record-1',
-    time: '2026-10-01 09:15',
+    time: new Date('2026-10-01T01:15:00Z'),
     emoji: '🏃',
     content: '跑步 5km，今天状态很好',
     type: 'moment',
@@ -52,7 +52,7 @@ const baseRecords: MosaicRecord[] = [
   },
   {
     id: 'record-2',
-    time: '2026-10-01 12:30',
+    time: new Date('2026-11-01T04:30:00Z'),
     emoji: '🍜',
     content: '和同事吃了拉面，新开的那家终于不用排队了',
     type: 'moment',
@@ -65,7 +65,7 @@ const baseRecords: MosaicRecord[] = [
   },
   {
     id: 'record-3',
-    time: '2026-10-01 15:00',
+    time: new Date('2025-11-02T07:00:00Z'),
     emoji: '',
     content: '下午阳光很好，心情不错',
     type: 'mood',
@@ -73,7 +73,7 @@ const baseRecords: MosaicRecord[] = [
   },
   {
     id: 'record-4',
-    time: '2026-10-01 18:40',
+    time: new Date('2026-10-01T10:40:00Z'),
     emoji: '📚',
     content: '读完《三体》，还是觉得很震撼',
     type: 'moment',
@@ -81,7 +81,7 @@ const baseRecords: MosaicRecord[] = [
   },
   {
     id: 'record-5',
-    time: '2026-10-01 21:30',
+    time: new Date('2026-10-01T13:30:00Z'),
     emoji: '📝',
     content: '和小明聊了很久，他准备换工作了',
     type: 'moment',
@@ -118,9 +118,16 @@ const photoPool: string[] = [
   'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=600&q=80',
 ];
 
-/** Build a `count`-image media list from the photo pool (ids are unique per call) */
-const makeMedia = (prefix: string, count: number): MomentMedia[] =>
-  photoPool.slice(0, count).map((url, index) => ({
+/**
+ * Build a `count`-image media list from the photo pool (ids are unique per
+ * call; `offset` shifts the pool so calendar tiles don't repeat the same photo)
+ */
+const makeMedia = (
+  prefix: string,
+  count: number,
+  offset = 0,
+): MomentMedia[] =>
+  photoPool.slice(offset, offset + count).map((url, index) => ({
     id: `${prefix}-${index + 1}`,
     kind: 'image',
     url,
@@ -129,7 +136,7 @@ const makeMedia = (prefix: string, count: number): MomentMedia[] =>
 const streamRecords: MosaicRecord[] = [
   {
     id: 'record-0',
-    time: '2026-10-01 08:10',
+    time: new Date('2026-11-02T00:10:00Z'),
     emoji: '☀️',
     content: '早起喝了杯手冲，今天状态不错',
     type: 'mood',
@@ -138,7 +145,7 @@ const streamRecords: MosaicRecord[] = [
   ...baseRecords.slice(0, 4),
   {
     id: 'record-7',
-    time: '2026-10-01 18:42',
+    time: new Date('2026-10-01T10:42:00Z'),
     emoji: '🌅',
     content:
       '今天下班的时候看到特别漂亮的晚霞，随手拍了两张。晚霞好美呀，希望明天也能看到。',
@@ -155,7 +162,7 @@ const streamRecords: MosaicRecord[] = [
   ...baseRecords.slice(4),
   {
     id: 'record-6',
-    time: '2026-10-01 23:00',
+    time: new Date('2026-10-01T15:00:00Z'),
     emoji: '😴',
     content: '早点睡，明天还要跑步',
     type: 'mood',
@@ -163,7 +170,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-8',
-    time: '2026-10-01 18:42',
+    time: new Date('2026-10-01T10:42:00Z'),
     emoji: '🌅',
     content: '今天下班的时候看到特别漂亮的晚霞，随手拍了两张。',
     type: 'moment',
@@ -178,7 +185,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-9',
-    time: '2026-10-01 18:42',
+    time: new Date('2026-10-01T10:42:00Z'),
     emoji: '🌅',
     content: '今天下班的时候看到特别漂亮的晚霞，随手拍了两张。',
     type: 'moment',
@@ -195,7 +202,7 @@ const streamRecords: MosaicRecord[] = [
   // (1 → single hero, 4 → 2x2, 5/6 → uneven wrap, 9 → full 3x3 grid)
   {
     id: 'record-photo-1',
-    time: '2026-10-01 07:05',
+    time: new Date('2026-09-30T23:05:00Z'),
     emoji: '📷',
     content: '早上的第一缕阳光，只拍到一张。',
     type: 'moment',
@@ -205,7 +212,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-photo-4',
-    time: '2026-10-01 11:20',
+    time: new Date('2026-10-01T03:20:00Z'),
     emoji: '🌻',
     content: '向日葵花田，凑了四张。',
     type: 'moment',
@@ -219,7 +226,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-photo-5',
-    time: '2026-10-01 13:45',
+    time: new Date('2026-10-01T05:45:00Z'),
     emoji: '🍽️',
     content: '五张图的午餐记录，看看换行是否正常。',
     type: 'moment',
@@ -229,7 +236,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-photo-6',
-    time: '2026-10-01 16:30',
+    time: new Date('2026-10-01T08:30:00Z'),
     emoji: '🏙️',
     content: '下午沿着街道走了一圈，随手拍了六张。',
     type: 'moment',
@@ -244,7 +251,7 @@ const streamRecords: MosaicRecord[] = [
   },
   {
     id: 'record-photo-9',
-    time: '2026-10-01 19:10',
+    time: new Date('2026-10-01T11:10:00Z'),
     emoji: '🎑',
     content: '九张图的九宫格，考验一下 3x3 排布。',
     type: 'moment',
@@ -267,32 +274,32 @@ export const mockRecords: RecordSample[] = [
       address: '北京市朝阳区望京街 10 号',
       source: 'gps',
     },
-    recordedAt: '2026-10-01T18:42:00+08:00',
+    recordedAt: '2026-10-01T10:42:00Z',
   },
   {
     type: 'moment',
     text: '中午和同事吃了新开的拉面。',
     tags: ['美食', '同事'],
-    recordedAt: '2026-10-01T12:35:00+08:00',
+    recordedAt: '2026-10-01T04:35:00Z',
   },
   {
     type: 'mood',
     emoji: '😊',
     text: '今天心情特别好',
     tags: ['周末', '好天气'],
-    recordedAt: '2026-10-01T21:30:00+08:00',
+    recordedAt: '2026-10-01T13:30:00Z',
   },
   {
     type: 'mood',
     emoji: '😮‍💨',
-    recordedAt: '2026-10-02T08:05:00+08:00',
+    recordedAt: '2026-10-02T00:05:00Z',
   },
 ];
 
 export const mockCategories: RecordsCategory[] = [
   { id: 'mood', emoji: '😊', name: '心情', count: 234, maxCount: 892 },
   { id: 'sport', emoji: '🏃', name: '运动', count: 89, maxCount: 892 },
-  { id: 'diary', emoji: '📝', name: '日记', count: 67, maxCount: 892 },
+  { id: 'writing', emoji: '📝', name: '日记', count: 67, maxCount: 892 },
   { id: 'photo', emoji: '📷', name: '照片', count: 892, maxCount: 892 },
   { id: 'read', emoji: '', name: '阅读', count: 45, maxCount: 892 },
   { id: 'relation', emoji: '👥', name: '关系', count: 156, maxCount: 892 },
@@ -317,7 +324,7 @@ export const mockMapData: RecordsMapData = {
 export const mockFeaturedLocationRecords: MosaicRecord[] = withAuthors([
   {
     id: 'kamakura-1',
-    time: '2026-10-01 09:40',
+    time: new Date('2026-10-01T01:40:00Z'),
     emoji: '',
     content: '第一次去了镰仓，江之电真的和灌篮高手里一模一样',
     type: 'moment',
@@ -325,7 +332,7 @@ export const mockFeaturedLocationRecords: MosaicRecord[] = withAuthors([
   },
   {
     id: 'kamakura-2',
-    time: '2026-10-01 10:15',
+    time: new Date('2026-10-01T02:15:00Z'),
     emoji: '📷',
     content: '江之电',
     type: 'moment',
@@ -333,7 +340,7 @@ export const mockFeaturedLocationRecords: MosaicRecord[] = withAuthors([
   },
   {
     id: 'kamakura-3',
-    time: '2026-10-01 14:30',
+    time: new Date('2026-10-01T06:30:00Z'),
     emoji: '📷',
     content: '镰仓大佛',
     type: 'moment',
@@ -341,10 +348,89 @@ export const mockFeaturedLocationRecords: MosaicRecord[] = withAuthors([
   },
 ]);
 
+/** 2026-08 instants stay on the same local day in +08:00 (hour 0-15 UTC) */
+const calendarTime = (day: number, hour: number) =>
+  new Date(
+    `2026-08-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:20:00Z`,
+  );
+
+/** Calendar record with photos — feeds the photo wall thumbnail */
+const calendarPhotoRecord = (
+  id: string,
+  day: number,
+  hour: number,
+  emoji: string,
+  content: string,
+  photoCount: number,
+  offset = 0,
+): MosaicRecord => ({
+  id: `calendar-${id}`,
+  time: calendarTime(day, hour),
+  emoji,
+  content,
+  type: 'moment',
+  typeLabel: '瞬间',
+  media: makeMedia(`cal-${id}`, photoCount, offset),
+});
+
+/** Calendar record without photos — the day keeps its plain date number */
+const calendarMoodRecord = (
+  id: string,
+  day: number,
+  hour: number,
+  emoji: string,
+  content?: string,
+): MosaicRecord => ({
+  id: `calendar-${id}`,
+  time: calendarTime(day, hour),
+  emoji,
+  content,
+  type: 'mood',
+  typeLabel: '心情',
+});
+
+/**
+ * Calendar mock: one month of records keyed by day of month. Days that carry
+ * photos show thumbnails on the calendar photo wall; text-only days keep the
+ * normal date number.
+ */
 export const mockCalendarRecords: Record<number, MosaicRecord[]> = {
-  28: withAuthors(baseRecords.slice(0, 2)),
-  29: withAuthors(baseRecords.slice(3, 5)),
-  30: withAuthors(baseRecords.slice(0, 3)),
+  2: withAuthors([
+    calendarPhotoRecord('2a', 2, 1, '🌅', '清晨的江边，雾还没散', 2, 6),
+  ]),
+  4: withAuthors([calendarMoodRecord('4a', 4, 12, '😌', '普通但舒服的一天')]),
+  5: withAuthors([
+    calendarPhotoRecord('5a', 5, 3, '🍜', '同事推荐的拉面店，汤头很浓', 1, 2),
+    calendarMoodRecord('5b', 5, 11, '🌙', '吃完散步回家'),
+  ]),
+  8: withAuthors([
+    calendarPhotoRecord('8a', 8, 2, '🌻', '向日葵开得正好', 4, 0),
+  ]),
+  10: withAuthors([calendarMoodRecord('10a', 10, 13, '😮‍💨', '加班到很晚')]),
+  12: withAuthors([
+    calendarPhotoRecord('12a', 12, 4, '☕️', '新开的咖啡店', 1, 5),
+  ]),
+  15: withAuthors([
+    calendarPhotoRecord('15a', 15, 6, '🏙️', '周末 city walk', 3, 1),
+  ]),
+  17: withAuthors([calendarMoodRecord('17a', 17, 9, '📚', '读完一本书')]),
+  19: withAuthors([
+    calendarPhotoRecord('19a', 19, 5, '🏕️', '露营的傍晚', 6, 0),
+  ]),
+  21: withAuthors([
+    calendarPhotoRecord('21a', 21, 7, '🌇', '晚霞染红了半边天', 9, 0),
+  ]),
+  23: withAuthors([calendarMoodRecord('23a', 23, 10, '🌧️', '下雨，哪儿也没去')]),
+  25: withAuthors([
+    calendarPhotoRecord('25a', 25, 2, '🌸', '路边的花开了', 2, 3),
+  ]),
+  27: withAuthors([
+    calendarPhotoRecord('27a', 27, 8, '📷', '随手拍的一张', 1, 7),
+  ]),
+  30: withAuthors([
+    calendarPhotoRecord('30a', 30, 3, '🍻', '和朋友吃饭，聊到很晚', 3, 5),
+    calendarMoodRecord('30b', 30, 12, '😴', '回家倒头就睡'),
+  ]),
 };
 
 export const currentMonth = {

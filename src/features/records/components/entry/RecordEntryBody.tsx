@@ -11,7 +11,7 @@ export interface RecordEntryBodyProps {
  * matching `record.type`.
  *
  * Adding a new record type = one `case` here plus its body component
- * (e.g. diary → DiaryEntryBody). The switch covers every variant today; the
+ * (e.g. writing → WritingEntryBody). The switch covers every variant today; the
  * fallback keeps rendering the moment body should a new variant slip through
  * so a record can never come out blank.
  */

@@ -8,6 +8,7 @@ import type {
 import { View } from 'react-native';
 
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { useTheme } from '@/hooks/use-theme';
 
 import { glassRimStyle, MosaicGlass } from './MosaicGlass';
 
@@ -17,7 +18,7 @@ export interface MosaicTextAreaProps
   minHeight?: number;
   /** Max height before the input scrolls internally, defaults to 240 */
   maxHeight?: number;
-  /** Container layout (margins / padding / flex-1), e.g. diary body `mx-[18px] flex-1` */
+  /** Container layout (margins / padding / flex-1), e.g. writing body `mx-[18px] flex-1` */
   containerClassName?: string;
   /**
    * Render the input on a liquid-glass surface (glass panel with a hairline rim).
@@ -29,7 +30,7 @@ export interface MosaicTextAreaProps
 }
 
 /**
- * Long-form plain text input (Moment caption / diary body, etc.).
+ * Long-form plain text input (Moment caption / writing body, etc.).
  * Borderless and transparent by default so the page background shows through;
  * with `glass` it sits on an absolute MosaicGlass surface instead.
  * Grows with the content between minHeight and maxHeight, then scrolls internally.
@@ -42,11 +43,12 @@ export function MosaicTextArea({
   containerClassName,
   glass = false,
   style,
-  placeholderTextColor = 'var(--color-text-muted)',
+  placeholderTextColor,
   onContentSizeChange,
   ...inputProps
 }: MosaicTextAreaProps) {
   const [height, setHeight] = useState(minHeight);
+  const theme = useTheme();
 
   const handleContentSizeChange = useCallback(
     // Since RN 0.88 TextInputContentSizeChangeEvent is NativeSyntheticEvent<{ contentSize }>
@@ -68,10 +70,16 @@ export function MosaicTextArea({
         {...inputProps}
         multiline
         onContentSizeChange={handleContentSizeChange}
-        placeholderTextColor={placeholderTextColor}
+        // Native color props take theme hex, never var() (not a style)
+        placeholderTextColor={placeholderTextColor ?? theme.colors.textMuted}
         // NativeWind preview does not apply className font styles to TextInput, so typography must go through style (see MEMORY.md)
         style={[
-          { fontSize: 14, lineHeight: 22, color: 'var(--color-text)', padding: 0 },
+          {
+            fontSize: theme.typography.body.fontSize,
+            lineHeight: theme.typography.body.lineHeight,
+            color: theme.colors.text,
+            padding: 0,
+          },
           style,
         ]}
       />

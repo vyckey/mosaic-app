@@ -1,3 +1,5 @@
+import { Text, View } from 'react-native';
+
 import {
   MosaicCard,
   MosaicList,
@@ -31,10 +33,13 @@ export function TodayFragments({ fragments, onPress }: TodayFragmentsProps) {
         {visibleFragments.map((fragment) => (
           <MosaicListRow
             key={fragment.id}
-            time={fragment.time}
-            emoji={fragment.emoji}
+            leading={
+              <View className="h-9 w-9 items-center justify-center rounded-stat bg-primary-muted">
+                <Text className="text-lg">{fragment.emoji}</Text>
+              </View>
+            }
             title={fragment.content}
-            subtitle={fragment.type}
+            subtitle={`${fragment.time} · ${fragment.type}`}
             onPress={() => onPress?.(fragment)}
           />
         ))}

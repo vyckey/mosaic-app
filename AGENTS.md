@@ -19,7 +19,7 @@ components/ui/   → Gluestack UI primitives (generic, theme-aware, no business 
   ↓
 components/mosaic/ → Custom design system components (built on theme + gluestack, app-specific patterns)
   ↓
-features/        → Feature screens & business logic (today, timeline, diary, create, moment, me, chat)
+features/        → Feature screens & business logic (records: moment/writing, create, home, me, chat)
   ↓
 app/             → Expo Router file-based routing (wires features into navigation)
 ```
@@ -52,20 +52,21 @@ app/             → Expo Router file-based routing (wires features into navigat
 
 #### 5. `src/features/` — Feature Modules
 - Each feature is a self-contained module with its own screen, components, types, and mock data
-- Features: `today/`, `timeline/`, `diary/`, `create/`, `moment/`, `me/`, `chat/`
+- Features: `records/` (`moment/`, `writing/`), `create/`, `home/`, `me/`, `chat/`
 - Features compose `mosaic/` components — never use `ui/` directly in features
 - Business logic, data fetching, and feature-specific types live here
 
 #### 6. `src/app/` — Expo Router
 - File-based routing: `(tabs)/` for tab navigation, individual files for modal/stack screens
-- `_layout.tsx` wraps the app with `I18nProvider` and `GluestackUIProvider`
-- Routes: `/today`, `/timeline`, `/chat`, `/me` (tabs), `/create`, `/diary`, `/moment`, `/login` (stack)
+- `_layout.tsx` wraps the app with `GluestackUIProvider` (global state lives in zustand stores, no providers needed)
+- Routes: `/records`, `/chat`, `/me` (tabs), `/create`, `/records/statistics`, `/records/writing`, `/records/writing/rich-text`, `/records/moment/[recordId]`, `/settings/*`, `/login` (stack)
 
 ### Cross-Cutting Concerns
 
 | Concern | Location | Notes |
 |---------|----------|-------|
-| i18n | `src/i18n/` | `i18n-js` + React Context. Hook: `useI18n()` → `{ locale, setLocale, t }`. Locales: `en`, `zh-CN` |
+| i18n | `src/i18n/` + `src/stores/use-locale-store.ts` | `i18n-js` for translations, zustand for the language preference. Hook: `useI18n()` → `{ locale, languagePreference, setLanguagePreference, t }`. Locales: `en`, `zh-CN` |
+| Global State | `src/stores/` | zustand stores (profile, locale). Use selectors for subscriptions |
 | Theme | `src/theme/` + `src/hooks/use-theme.ts` | `useTheme()` returns full `Theme` object |
 | Color Scheme | `src/hooks/use-color-scheme.ts` | Handles light/dark/system |
 | Constants | `src/constants/` | Layout constants |
@@ -83,7 +84,7 @@ src/
 │   │   ├── chat.tsx
 │   │   └── me.tsx
 │   ├── create.tsx          # Modal/stack screens
-│   ├── diary.tsx
+│   ├── record/             # Record screens (moment detail, writing editor)
 │   ├── moment.tsx
 │   └── login.tsx
 ├── components/
@@ -115,7 +116,7 @@ src/
 ├── features/               # Feature modules
 │   ├── today/
 │   ├── timeline/
-│   ├── diary/
+│   ├── records/            # Records (moment/, writing/)
 │   ├── create/
 │   ├── moment/
 │   ├── me/
@@ -123,9 +124,12 @@ src/
 ├── hooks/                  # Shared hooks
 │   ├── use-theme.ts
 │   └── use-color-scheme.ts
+├── stores/                 # zustand global state
+│   ├── index.ts            # Barrel export
+│   ├── use-locale-store.ts # Language preference + locale
+│   └── use-profile-store.ts# User profile (gender, birthday)
 ├── i18n/                   # Internationalization
 │   ├── index.ts            # i18n-js instance
-│   ├── context.tsx         # I18nProvider
 │   ├── useI18n.ts          # useI18n() hook
 │   └── locales/
 │       ├── en.ts
@@ -139,5 +143,6 @@ src/
 - **Components**: Always use `mosaic/` components in features. Only use `ui/` primitives inside `mosaic/` components
 - **Theming**: Never hardcode colors. Use `useTheme()` or Tailwind classes mapped to theme tokens
 - **i18n**: All user-facing strings via `t()` from `useI18n()`. Translation keys in `src/i18n/locales/`
+- **Global State**: Cross-screen state lives in `src/stores/` zustand stores. Subscribe with selectors (`useProfileStore((s) => s.gender)`) and keep provider-free
 - **Types**: Feature-specific types in `features/<name>/types.ts`. Shared types in `components/mosaic/` or `theme/`
 - **Comments**: Always write code comments (inline comments and JSDoc/doc blocks) in English

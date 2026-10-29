@@ -33,13 +33,14 @@ const variantClassName: Record<SolidVariant, string> = {
 /**
  * Sizes carry no radius: every icon button is a circle (rounded-full sits on
  * each branch) — the "controls = capsule" rule of the unified radius system.
- * lg matches the shared 50dp control height (lg MosaicButton / pill inputs);
+ * sm/md/lg heights match MosaicButton's sm/md/lg (32/44/50) so one size name
+ * means one height across the button family;
  * xl is the floating create button (64 = tab bar height).
  */
 const sizeClassName: Record<NonNullable<MosaicIconButtonProps['size']>, string> =
   {
     sm: 'h-8 w-8',
-    md: 'h-9 w-9',
+    md: 'h-11 w-11',
     lg: 'h-[50px] w-[50px]',
     xl: 'h-16 w-16',
   };

@@ -16,7 +16,7 @@ import {
   MosaicGlass,
   MosaicPressable,
   MosaicSheet,
-  MosaicTags,
+  MosaicTagsEditor,
   MosaicText,
   MosaicTextArea,
 } from '@/components/mosaic';
@@ -92,7 +92,7 @@ export function CreateSheet({ visible, onAction, onClose }: CreateSheetProps) {
   }[] = [
     { key: 'mood', icon: Smile, label: t('create.mood') },
     { key: 'moment', icon: Camera, label: t('create.moment') },
-    { key: 'text', icon: Pencil, label: t('create.diary') },
+    { key: 'text', icon: Pencil, label: t('create.writing') },
     { key: 'note', icon: FileText, label: t('create.note') },
     { key: 'checkin', icon: CalendarCheck, label: t('create.checkin') },
   ];
@@ -214,7 +214,7 @@ export function CreateSheet({ visible, onAction, onClose }: CreateSheetProps) {
       )}
 
       {['mood', 'checkin'].includes(selectedMode) && (
-        <MosaicTags value={tags} onChange={setTags} className="mb-4" />
+        <MosaicTagsEditor value={tags} onChange={setTags} className="mb-4" />
       )}
 
       {!isEditorMode && (

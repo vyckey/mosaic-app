@@ -2,7 +2,6 @@ import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
 import {
-  MosaicCard,
   MosaicStat,
   MosaicStatGrid,
 } from '@/components/mosaic';
@@ -27,7 +26,7 @@ export function RecordsMap() {
           <Pressable
             key={location.id}
             onPress={() => {
-              // TODO: 查看地点详情
+              // TODO: open location detail
               console.log('location:', location.name);
             }}
             className="absolute rounded-full bg-accent-clay px-2.5 py-1.5"
@@ -43,15 +42,18 @@ export function RecordsMap() {
         ))}
       </View>
 
-      <MosaicCard>
+      {/* Flat stats row on the page canvas (no card chrome);
+          MosaicStat blocks carry their own muted surface */}
+      <View>
         <MosaicStatGrid>
           <MosaicStat value={String(mockMapData.cities)} label={t('records.cities')} />
           <MosaicStat value={String(mockMapData.countries)} label={t('records.countries')} />
           <MosaicStat value={String(mockMapData.footprints)} label={t('records.footprints')} />
         </MosaicStatGrid>
-      </MosaicCard>
+      </View>
 
-      <MosaicCard>
+      {/* Featured location records: flat section, entries share the page gutter */}
+      <View>
         <Text className="text-body font-semibold text-text will-change-variable">
           {featured
             ? t('records.featuredLocation', {
@@ -64,7 +66,7 @@ export function RecordsMap() {
         <View className="mt-3">
           <RecordsStream records={mockFeaturedLocationRecords} inline />
         </View>
-      </MosaicCard>
+      </View>
     </View>
   );
 }

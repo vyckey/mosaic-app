@@ -1,3 +1,4 @@
+export * from './PhotoCalendar';
 export * from './RecordsCalendar';
 export * from './RecordsCategories';
 export * from './RecordsMap';

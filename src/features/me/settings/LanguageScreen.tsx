@@ -2,8 +2,7 @@ import { Check } from 'lucide-react-native';
 
 import { MosaicCard, MosaicList, MosaicListRow } from '@/components/mosaic';
 import { Icon } from '@/components/ui/icon';
-import type { LanguagePreference } from '@/i18n/context';
-import { useI18n } from '@/i18n/useI18n';
+import { useI18n, type LanguagePreference } from '@/i18n/useI18n';
 
 import { SettingsPageShell } from './components/SettingsPageShell';
 

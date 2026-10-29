@@ -19,7 +19,10 @@ export function CreateScreen() {
     }
     if (action === 'text') {
       router.push({
-        pathname: format === 'RICH_TEXT' ? '/diary-rich-text' : '/diary',
+        pathname:
+          format === 'RICH_TEXT'
+            ? '/records/writing/rich-text'
+            : '/records/writing',
         params: {
           ...(draft ? { draft } : {}),
           ...(format ? { format } : {}),

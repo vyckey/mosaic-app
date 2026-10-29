@@ -1,10 +1,14 @@
 import { ChevronRight } from 'lucide-react-native';
-import { ImageBackground, View } from 'react-native';
+import { View } from 'react-native';
 
-import { MosaicCard, MosaicPressable, MosaicText } from '@/components/mosaic';
+import {
+  MosaicCard,
+  MosaicImage,
+  MosaicPressable,
+  MosaicText,
+} from '@/components/mosaic';
 import { Icon } from '@/components/ui/icon';
 import { useI18n } from '@/i18n/useI18n';
-import { radius } from '@/theme/radius';
 
 import type { MemoryOfToday as MemoryOfTodayType } from '../types';
 
@@ -72,58 +76,47 @@ export function MemoryOfToday({ memory, onPress }: MemoryOfTodayProps) {
 
         <View className="h-[178px] flex-row gap-1.5">
           {first && (
-            <View className="flex-[1.35] overflow-hidden rounded-stat">
-              <ImageBackground
-                source={{ uri: first.uri }}
-                className="h-full w-full"
-                // Mirrors the parent's rounded-stat: the image's own clip stays
-                // in step with the tile corner instead of a stale magic number
-                imageStyle={{ borderRadius: radius.stat }}
-                resizeMode="cover"
-              >
-                <PhotoOverlay label={first.label} badge={first.badge} />
-              </ImageBackground>
+            <View className="flex-[1.35] overflow-hidden rounded-tile">
+              {/* RN's ImageBackground is deprecated: layer MosaicImage
+                  absolutely instead. The wrapper owns the rounded clip, and
+                  pointerEvents="none" keeps card presses flowing through */}
+              <View className="absolute inset-0" pointerEvents="none">
+                <MosaicImage source={{ uri: first.uri }} />
+              </View>
+              <PhotoOverlay label={first.label} badge={first.badge} />
             </View>
           )}
 
           <View className="flex-[0.825] gap-1.5">
             {second && (
-              <View className="flex-1 overflow-hidden rounded-stat">
-                <ImageBackground
-                  source={{ uri: second.uri }}
-                  className="h-full w-full"
-                  imageStyle={{ borderRadius: radius.stat }}
-                  resizeMode="cover"
-                >
-                  <PhotoOverlay
-                    label={second.label}
-                    badge={second.badge}
-                    compact
-                  />
-                </ImageBackground>
+              <View className="flex-1 overflow-hidden rounded-tile">
+                <View className="absolute inset-0" pointerEvents="none">
+                  <MosaicImage source={{ uri: second.uri }} />
+                </View>
+                <PhotoOverlay
+                  label={second.label}
+                  badge={second.badge}
+                  compact
+                />
               </View>
             )}
             {third && (
-              <View className="flex-1 overflow-hidden rounded-stat">
-                <ImageBackground
-                  source={{ uri: third.uri }}
-                  className="h-full w-full"
-                  imageStyle={{ borderRadius: radius.stat }}
-                  resizeMode="cover"
-                >
-                  <PhotoOverlay
-                    label={third.label}
-                    badge={third.badge}
-                    compact
-                  />
-                </ImageBackground>
+              <View className="flex-1 overflow-hidden rounded-tile">
+                <View className="absolute inset-0" pointerEvents="none">
+                  <MosaicImage source={{ uri: third.uri }} />
+                </View>
+                <PhotoOverlay
+                  label={third.label}
+                  badge={third.badge}
+                  compact
+                />
               </View>
             )}
           </View>
         </View>
 
         <MosaicText variant="body" tone="text" weight="500" className="mt-4 leading-6">
-          "{memory.content}"
+          “{memory.content}”
         </MosaicText>
 
         <View className="mt-3 flex-row items-center justify-between">

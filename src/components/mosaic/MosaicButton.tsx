@@ -78,11 +78,13 @@ const variantConfig: Record<NonGlassVariant, VariantConfig> = {
   },
   destructive: {
     base: 'destructive',
-    // Pressed shade of the danger hue (rose700 light / rose200 dark). The ramp
-    // only ships a "-muted-foreground" entry at that strength, and it mirrors
-    // primary's primaryStrong pressed state; a muted background here would
-    // leave white labels unreadable.
-    className: 'data-[active=true]:bg-danger-muted-foreground',
+    // Explicit background on both schemes: the gluestack base paints
+    // `dark:bg-destructive/60`, and an alpha modifier on a CSS variable does not
+    // resolve on native, which left the dark-mode button fully transparent.
+    // Pressed shade reuses the strong danger entry (rose700 light / rose200
+    // dark) since that is the only ramp step dark enough for the solid label.
+    className:
+      'bg-danger dark:bg-danger data-[active=true]:bg-danger-muted-foreground',
     textClassName: 'text-danger-foreground',
   },
 };

@@ -1,40 +1,39 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSettingsStore } from '@/stores/use-settings-store';
 
 import '@/global.css';
-import { I18nProvider } from '@/i18n/context';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const themeMode = useSettingsStore((state) => state.appearance.themeMode);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <GluestackUIProvider mode="system">
+      <GluestackUIProvider mode={themeMode}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <AnimatedSplashOverlay />
 
-          <I18nProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen
-                name="create"
-                options={{
-                  headerShown: false,
-                  presentation: 'transparentModal',
-                  animation: 'slide_from_bottom',
-                }}
-              />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="create"
+              options={{
+                headerShown: false,
+                presentation: 'transparentModal',
+                animation: 'slide_from_bottom',
+              }}
+            />
 
-              <Stack.Screen name="dev" />
-            </Stack>
-          </I18nProvider>
+            <Stack.Screen name="dev" />
+          </Stack>
         </ThemeProvider>
       </GluestackUIProvider>
     </GestureHandlerRootView>

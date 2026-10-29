@@ -1,38 +1,37 @@
-import type { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import type { ReactNode } from 'react';
+import { ScrollView } from 'react-native';
 
-import { MosaicScreenHeader } from '@/components/mosaic';
+import { MosaicScreen, MosaicScreenHeader } from '@/components/mosaic';
 
 export interface SettingsPageShellProps {
   title: string;
+  subtitle?: string;
   children: ReactNode;
+  /** Content pinned after the scroll body (e.g. a destructive page action) */
+  footer?: ReactNode;
 }
 
-export function SettingsPageShell({ title, children }: SettingsPageShellProps) {
-  const insets = useSafeAreaInsets();
-
+/** Shared frame for settings pages: self-inset glass header + scrolling body */
+export function SettingsPageShell({
+  title,
+  subtitle,
+  children,
+  footer,
+}: SettingsPageShellProps) {
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={title}
-          onBack={() => router.back()}
-          className="flex-1"
-        />
-      </View>
+    <MosaicScreen>
+      <MosaicScreenHeader title={title} subtitle={subtitle} onBack={() => router.back()} />
 
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-[18px] pb-10 pt-2"
+        contentContainerClassName="gap-5 px-[18px] pb-12 pt-2"
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {children}
+        {footer}
       </ScrollView>
-    </View>
+    </MosaicScreen>
   );
 }

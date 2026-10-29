@@ -11,9 +11,9 @@ export type MosaicRecord = MosaicMoodRecord | MosaicMomentRecord;
 /** Fields every record type shares (rendered by the RecordEntry skeleton) */
 export interface MosaicRecordBase {
   id: string;
-  /** Display timestamp, formatted `yyyy-MM-dd HH:mm` (mock already pre-formatted) */
-  time: string;
-  /** Optional author shown as avatar + name on the row (Moments style) */
+  /** Recorded instant; the feed renders it in the device's local timezone */
+  time: Date;
+  /** Optional author; the feed row no longer renders it (records are the user's own) */
   author?: RecordsAuthor;
   tags?: string[];
   location?: MomentLocation;

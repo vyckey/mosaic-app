@@ -1,7 +1,11 @@
-import { Image } from 'expo-image';
 import { View } from 'react-native';
 
-import { MosaicText } from '@/components/mosaic';
+import {
+  MosaicImage,
+  MosaicImagePreview,
+  MosaicText,
+  useMosaicImagePreview,
+} from '@/components/mosaic';
 
 import type { MosaicMomentRecord } from '../../types';
 
@@ -10,11 +14,14 @@ export interface MomentEntryBodyProps {
 }
 
 /**
- * Body for moment records: body text + photo grid. The grid uses fixed
- * 128×128 tiles that wrap, so 1/4/5/6/9 photos exercise every row shape.
+ * Body for moment records: body text + photo grid. The grid is a responsive
+ * 3-column layout: cells are fixed 31.6% wide (plus a 2.5% column margin on
+ * the first two columns, so 3 cells + 2 gaps ≈ the full line) — every cell
+ * keeps one identical size, including a lone cell on the last row.
  */
 export function MomentEntryBody({ record }: MomentEntryBodyProps) {
   const { content, media } = record;
+  const preview = useMosaicImagePreview();
 
   return (
     <>
@@ -28,21 +35,37 @@ export function MomentEntryBody({ record }: MomentEntryBodyProps) {
       )}
 
       {media?.length ? (
-        <View className="mt-5 flex-row flex-wrap gap-2.5">
-          {media.map((item) => (
+        // Row gap only — column spacing comes from each cell's right margin.
+        <View className="mt-5 flex-row flex-wrap gap-y-2.5">
+          {media.map((item, index) => (
+            // Uniform 3-column cell: 31.6% + 2.5% right margin on columns 0/1
+            // fills the line (3×31.6 + 2×2.5 = 99.8%), while every cell — a
+            // lone 4th image included — stays the SAME size (no grow, so a
+            // partial last row never stretches). Square via inline aspectRatio.
             <View
               key={item.id}
-              className="h-32 w-32 overflow-hidden rounded-stat bg-surface"
+              style={{
+                aspectRatio: 1,
+                marginRight: index % 3 === 2 ? 0 : '2.5%',
+              }}
+              className="w-[31.6%]"
             >
-              <Image
+              <MosaicImage
                 source={{ uri: item.url }}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
+                onPress={() =>
+                  preview.open(
+                    media.map((m) => ({ uri: m.url })),
+                    index,
+                  )
+                }
               />
             </View>
           ))}
         </View>
       ) : null}
+
+      {/* Full-screen viewer for the grid above (swipe / pinch / double-tap) */}
+      <MosaicImagePreview {...preview} />
     </>
   );
 }

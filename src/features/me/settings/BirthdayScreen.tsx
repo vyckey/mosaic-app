@@ -6,9 +6,9 @@ import { Platform } from 'react-native';
 
 import { MosaicCard, MosaicList, MosaicListRow } from '@/components/mosaic';
 import { useI18n } from '@/i18n/useI18n';
+import { useProfileStore } from '@/stores/use-profile-store';
 
 import { SettingsPageShell } from './components/SettingsPageShell';
-import { useProfile } from './profile-context';
 
 function toDateString(date: Date): string {
   const year = date.getFullYear();
@@ -21,7 +21,8 @@ const DEFAULT_DATE = new Date(2000, 0, 1);
 
 export function BirthdayScreen() {
   const { t } = useI18n();
-  const { birthday, setBirthday } = useProfile();
+  const birthday = useProfileStore((state) => state.birthday);
+  const setBirthday = useProfileStore((state) => state.setBirthday);
   const [date, setDate] = useState(() =>
     birthday ? new Date(birthday) : DEFAULT_DATE,
   );
@@ -47,11 +48,11 @@ export function BirthdayScreen() {
   };
 
   return (
-    <SettingsPageShell title={t('settings.birthday')}>
+    <SettingsPageShell title={t('settings.profile.birthday')}>
       <MosaicCard>
         <MosaicList>
           <MosaicListRow
-            title={t('settings.birthday')}
+            title={t('settings.profile.birthday')}
             value={birthday || undefined}
             placeholder={birthday ? undefined : t('settings.notSet')}
             chevron={false}
