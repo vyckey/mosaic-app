@@ -6,13 +6,16 @@
 /**
  * Mosaic Design Tokens
  *
- * ⚠️ 唯一语义来源是 src/theme/（types.ts / light.ts / dark.ts / scales.ts）。
- * 这里只为 Tailwind v4 / NativeWind 生成对应的 utility class：
- * - 颜色改动请同步 src/theme/light.ts 与 src/components/ui/gluestack-ui-provider/config.tsx
- * - radius / typography 改动请同步 src/theme/scales.ts
+ * ⚠️ src/theme/ is the single semantic source (types.ts / light.ts / dark.ts
+ * plus radius.ts / spacing.ts / typography.ts). This file only mirrors those
+ * tokens as Tailwind v4 / NativeWind utility classes:
+ * - Color changes: sync src/theme/light.ts and
+ *   src/components/ui/gluestack-ui-provider/config.tsx
+ * - Radius / typography changes: sync src/theme/radius.ts, spacing.ts and
+ *   typography.ts
  */
 @theme {
-  /* ---- 颜色（light 默认值） ---- */
+  /* ---- Colors (light defaults) ---- */
   --color-background: #f1f4ea;
   --color-background-muted: #edf1e5;
   --color-background-subtle: #edf1e5;
@@ -66,7 +69,7 @@
   --color-accent-clay: #c09077;
   --color-accent-clay-muted: #f2e6dc;
 
-  /* ---- 别名（shadcn 命名，供 gluestack 生成的 ui/* 组件使用） ---- */
+  /* ---- Aliases (shadcn names, used by the gluestack-generated ui/* components) ---- */
   --color-foreground: #2b3329;
   --color-card: #fcfdf8;
   --color-card-foreground: #2b3329;
@@ -81,14 +84,14 @@
   --color-input: #dfe5d5;
   --color-ring: #74956d;
 
-  /* ---- 圆角（= theme/scales.ts radius） ---- */
-  --radius-tile: 12px;
+  /* ---- Radius (= theme/radius.ts) ---- */
+  --radius-tile: 8px;
   --radius-btn: 14px;
   --radius-stat: 16px;
   --radius-card: 22px;
   --radius-sheet: 32px;
 
-  /* ---- 间距（= theme/scales.ts spacing） ---- */
+  /* ---- Spacing (= theme/spacing.ts) ---- */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
@@ -96,7 +99,7 @@
   --spacing-xl: 24px;
   --spacing-2xl: 32px;
 
-  /* ---- 字体（= theme/scales.ts typography，对应原型 h1/h2/h3/p/.muted/.tiny） ---- */
+  /* ---- Typography (= theme/typography.ts, mirrors prototype h1/h2/h3/p/.muted/.tiny) ---- */
   --text-display: 28px;
   --text-display--line-height: 36px;
   --text-display--font-weight: 700;
@@ -106,14 +109,14 @@
   --text-title--line-height: 28px;
   --text-title--font-weight: 600;
 
-  --text-subtitle: 16px;
-  --text-subtitle--line-height: 24px;
+  --text-subtitle: 18px;
+  --text-subtitle--line-height: 26px;
   --text-subtitle--font-weight: 600;
 
-  --text-body: 14px;
-  --text-body--line-height: 22px;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
 
-  --text-caption: 13px;
+  --text-caption: 14px;
   --text-caption--line-height: 20px;
 
   --text-tiny: 12px;

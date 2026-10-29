@@ -8,12 +8,12 @@ import Sortable from 'react-native-sortables';
 import { Icon } from '@/components/ui/icon';
 import { useI18n } from '@/i18n/useI18n';
 
-import { MosaicButton } from './MosaicButton';
-import { MosaicChip } from './MosaicChip';
-import { MosaicChipGroup } from './MosaicChipGroup';
-import { MosaicSearchBar } from './MosaicSearchBar';
-import { MosaicSheet } from './MosaicSheet';
-import { MosaicText } from './MosaicText';
+import { MosaicButton } from '../MosaicButton';
+import { MosaicChip } from '../MosaicChip';
+import { MosaicChipGroup } from '../MosaicChipGroup';
+import { MosaicSearchBar } from '../MosaicSearchBar';
+import { MosaicSheet } from '../MosaicSheet';
+import { MosaicText } from '../MosaicText';
 
 const DEFAULT_MAX = 10;
 
@@ -120,6 +120,7 @@ export function MosaicTagPickerSheet({
             label={tag}
             active={active}
             onPress={!active && atMax ? undefined : () => toggle(tag)}
+            size="md"
             className={!active && atMax ? 'opacity-50' : undefined}
           />
         );
@@ -132,6 +133,7 @@ export function MosaicTagPickerSheet({
       label={label}
       active
       onPress={draft.length >= max ? undefined : handleCreate}
+      size="md"
       className={draft.length >= max ? 'opacity-50' : undefined}
     />
   );
@@ -148,7 +150,7 @@ export function MosaicTagPickerSheet({
       onClose={onClose}
       title={t('tagPicker.title')}
       headerRight={
-        <MosaicButton size="sm" onPress={handleDone}>
+        <MosaicButton size="md" onPress={handleDone}>
           {t('tagPicker.done')}
         </MosaicButton>
       }
@@ -156,7 +158,7 @@ export function MosaicTagPickerSheet({
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
             <MosaicButton
-              size="sm"
+              size="md"
               variant="ghost"
               onPress={handleClear}
               disabled={draft.length === 0}
@@ -164,12 +166,12 @@ export function MosaicTagPickerSheet({
               {t('tagPicker.clear')}
             </MosaicButton>
             {cleared && (
-              <MosaicButton size="sm" variant="secondary" onPress={handleUndo}>
+              <MosaicButton size="md" variant="secondary" onPress={handleUndo}>
                 {t('tagPicker.undo')}
               </MosaicButton>
             )}
           </View>
-          <MosaicButton size="sm" onPress={handleDone}>
+          <MosaicButton size="md" onPress={handleDone}>
             {t('tagPicker.doneCount', { count: draft.length, max })}
           </MosaicButton>
         </View>
@@ -206,13 +208,13 @@ export function MosaicTagPickerSheet({
                 {draft.map((tag) => (
                   <View key={tag}>
                     <Sortable.Touchable onTap={() => removeTag(tag)}>
-                      <View className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-1.5">
-                        <Text className="text-xs text-primary-foreground">
+                      <View className="flex-row items-center gap-1 rounded-full bg-primary px-3.5 py-2">
+                        <Text className="text-sm text-primary-foreground">
                           {tag}
                         </Text>
                         <Icon
                           as={X}
-                          size="2xs"
+                          size="sm"
                           className="text-primary-foreground"
                         />
                       </View>
@@ -242,6 +244,7 @@ export function MosaicTagPickerSheet({
                 {sectionLabel(t('tagPicker.recommended'))}
                 <MosaicChipGroup
                   scrollable
+                  size="md"
                   options={[
                     { value: 'recent', label: t('tagPicker.recent') },
                     { value: 'popular', label: t('tagPicker.popular') },

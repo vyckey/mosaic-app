@@ -1,92 +1,104 @@
-import { Smile } from 'lucide-react-native';
 import { useState } from 'react';
-import { View } from 'react-native';
+import {
+  ScrollView,
+  useWindowDimensions,
+  type DimensionValue,
+} from 'react-native';
 
-import { EmojiChip, type EmojiItem } from './EmojiChip';
-import { MosaicIcon } from './MosaicIcon';
-import { MosaicPressable } from './MosaicPressable';
-import { MosaicSheet } from './MosaicSheet';
-import { MosaicText } from './MosaicText';
+import {
+  EMOTION_EMOJIS,
+  getEmotionLabel,
+  type EmojiValue,
+} from '@/constants/emojis';
+import { useI18n } from '@/i18n/useI18n';
+
+import { EmojiChip } from './EmojiChip';
+import { MosaicDialog } from './MosaicDialog';
 
 export interface MosaicEmojiPickerModalProps {
-  items: EmojiItem[];
+  visible: boolean;
+  /** Committed emoji; marks the matching chip and seeds the draft. */
   value?: string | null;
-  onChange: (emoji: string | null) => void;
-  /** 触发按钮未选中时的占位文案 */
-  placeholder?: string;
-  /** 弹层标题 */
+  /**
+   * Receives the draft when the footer's Ok is pressed, label included so the
+   * caller can render the trigger without re-reading the emoji catalog.
+   */
+  onChange: (selection: EmojiValue | null) => void;
+  /** Dismisses the dialog — Cancel, the backdrop and Android back all use it. */
+  onClose: () => void;
+  /** Dialog title; defaults to the localized "Emoji". */
   title?: string;
-  className?: string;
-  contentContainerClassName?: string;
+  /** Width cap, passed straight to `MosaicDialog`. Defaults to `'84%'`. */
+  maxWidth?: DimensionValue;
 }
 
+/**
+ * Emoji chooser dialog only: it owns the catalog, the grid, the draft
+ * selection and the footer. The trigger (the emoji / placeholder the user
+ * taps) lives with the screen, which also decides when the dialog opens.
+ *
+ * Picking a chip edits a draft; only Ok commits it through `onChange`, so
+ * Cancel or a tap outside leaves the previous value untouched.
+ */
 export function MosaicEmojiPickerModal({
-  items,
+  visible,
   value,
   onChange,
-  placeholder,
+  onClose,
   title,
-  className,
-  contentContainerClassName,
+  maxWidth = '84%',
 }: MosaicEmojiPickerModalProps) {
-  const [visible, setVisible] = useState(false);
+  const { locale, t } = useI18n();
+  const { height } = useWindowDimensions();
 
-  const selected = items.find((item) => item.emoji === value);
+  const items = EMOTION_EMOJIS.map((item) => ({
+    emoji: item.emoji,
+    label: getEmotionLabel(item, locale),
+  }));
 
-  const handlePress = (item: EmojiItem) => {
-    onChange(value === item.emoji ? null : item.emoji);
-    setVisible(false);
+  const [draft, setDraft] = useState<string | null>(value ?? null);
+  const [wasVisible, setWasVisible] = useState(visible);
+
+  // Re-snapshot on every open. Adjusting state during render is React's
+  // recommended alternative to an effect here: the dialog's parent flips
+  // `visible`, and the draft must follow before the grid paints.
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+
+    if (visible) {
+      setDraft(value ?? null);
+    }
+  }
+
+  const handleConfirm = () => {
+    onChange(items.find((item) => item.emoji === draft) ?? null);
+    onClose();
   };
 
   return (
-    <>
-      <MosaicPressable
-        onPress={() => setVisible(true)}
-        hitSlop={{ top: 8, bottom: 8 }}
-        className={['flex-row items-center gap-1 self-start pr-1', className]
-          .filter(Boolean)
-          .join(' ')}
+    <MosaicDialog
+      visible={visible}
+      onClose={onClose}
+      onConfirm={handleConfirm}
+      title={title ?? t('moment.emoji')}
+      maxWidth={maxWidth}
+    >
+      <ScrollView
+        style={{ maxHeight: height * 0.4 }}
+        contentContainerClassName="flex-row flex-wrap justify-between gap-1"
+        showsVerticalScrollIndicator
       >
-        {selected ? (
-          <>
-            <MosaicText variant="body">{selected.emoji}</MosaicText>
-            <MosaicText variant="tiny" tone="text-muted">
-              {selected.label}
-            </MosaicText>
-          </>
-        ) : (
-          <>
-            <MosaicIcon as={Smile} size="sm" tone="text-muted" />
-            <MosaicText variant="tiny" tone="text-muted">
-              {placeholder}
-            </MosaicText>
-          </>
-        )}
-      </MosaicPressable>
-
-      <MosaicSheet
-        visible={visible}
-        onClose={() => setVisible(false)}
-        title={title}
-      >
-        <View
-          className={[
-            'flex-row flex-wrap justify-center gap-2.5',
-            contentContainerClassName,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {items.map((item) => (
-            <EmojiChip
-              key={item.emoji}
-              item={item}
-              active={value === item.emoji}
-              onPress={() => handlePress(item)}
-            />
-          ))}
-        </View>
-      </MosaicSheet>
-    </>
+        {items.map((item) => (
+          <EmojiChip
+            key={item.emoji}
+            item={item}
+            active={draft === item.emoji}
+            onPress={() =>
+              setDraft((prev) => (prev === item.emoji ? null : item.emoji))
+            }
+          />
+        ))}
+      </ScrollView>
+    </MosaicDialog>
   );
 }

@@ -19,7 +19,7 @@ components/ui/   → Gluestack UI primitives (generic, theme-aware, no business 
   ↓
 components/mosaic/ → Custom design system components (built on theme + gluestack, app-specific patterns)
   ↓
-features/        → Feature screens & business logic (today, timeline, diary, create, moment, me, chat)
+features/        → Feature screens & business logic (records: moment/writing, create, home, me, chat)
   ↓
 app/             → Expo Router file-based routing (wires features into navigation)
 ```
@@ -52,14 +52,14 @@ app/             → Expo Router file-based routing (wires features into navigat
 
 #### 5. `src/features/` — Feature Modules
 - Each feature is a self-contained module with its own screen, components, types, and mock data
-- Features: `today/`, `timeline/`, `diary/`, `create/`, `moment/`, `me/`, `chat/`
+- Features: `records/` (`moment/`, `writing/`), `create/`, `home/`, `me/`, `chat/`
 - Features compose `mosaic/` components — never use `ui/` directly in features
 - Business logic, data fetching, and feature-specific types live here
 
 #### 6. `src/app/` — Expo Router
 - File-based routing: `(tabs)/` for tab navigation, individual files for modal/stack screens
 - `_layout.tsx` wraps the app with `I18nProvider` and `GluestackUIProvider`
-- Routes: `/today`, `/timeline`, `/chat`, `/me` (tabs), `/create`, `/diary`, `/moment`, `/login` (stack)
+- Routes: `/records`, `/chat`, `/me` (tabs), `/create`, `/record/writing`, `/record/writing/rich-text`, `/moment`, `/record/moment/[recordId]`, `/login` (stack)
 
 ### Cross-Cutting Concerns
 
@@ -83,7 +83,7 @@ src/
 │   │   ├── chat.tsx
 │   │   └── me.tsx
 │   ├── create.tsx          # Modal/stack screens
-│   ├── diary.tsx
+│   ├── record/             # Record screens (moment detail, writing editor)
 │   ├── moment.tsx
 │   └── login.tsx
 ├── components/
@@ -115,7 +115,7 @@ src/
 ├── features/               # Feature modules
 │   ├── today/
 │   ├── timeline/
-│   ├── diary/
+│   ├── records/            # Records (moment/, writing/)
 │   ├── create/
 │   ├── moment/
 │   ├── me/

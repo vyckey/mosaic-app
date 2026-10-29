@@ -5,6 +5,12 @@ export interface EmotionDefinition {
   label: Record<EmotionLocale, string>;
 }
 
+/** A resolved emoji plus its localized label, ready for display or storage. */
+export interface EmojiValue {
+  emoji: string;
+  label: string;
+}
+
 export const EMOTION_EMOJIS: EmotionDefinition[] = [
   { emoji: '😊', label: { en: 'Happy', 'zh-CN': '开心' } },
   { emoji: '🥰', label: { en: 'In Love', 'zh-CN': '喜欢' } },

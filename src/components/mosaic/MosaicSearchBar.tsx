@@ -1,10 +1,10 @@
 import { Search } from 'lucide-react-native';
-import { useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable } from 'react-native';
 
-import { Icon } from '@/components/ui/icon';
 import { useTheme } from '@/hooks/use-theme';
 import { useI18n } from '@/i18n/useI18n';
+
+import { MosaicInput } from './MosaicInput';
 
 export interface MosaicSearchBarProps {
   value?: string;
@@ -12,12 +12,21 @@ export interface MosaicSearchBarProps {
   placeholder?: string;
   onSubmitEditing?: () => void;
   autoFocus?: boolean;
-  /** Hot-zone mode (e.g. jumping to a search page): the bar stays read-only and the whole row only fires onPress */
+  /** Hot-zone mode (e.g. jumping to a search page): the field stays read-only and the whole row only fires onPress */
   onPress?: () => void;
+  /** Layout classes for the field wrapper (e.g. flex-1 to fill a row) */
   className?: string;
 }
 
-/** Timeline top search bar from the prototype; a sage rim shows on focus */
+/**
+ * Timeline top search bar from the prototype; a thin wrapper over MosaicInput.
+ * Reuses the shared pill/focus-rim/placeholder/caret machinery and adds:
+ * - the i18n default placeholder,
+ * - a read-only hot-zone mode (onPress) that turns the whole row into a
+ *   navigation target,
+ * - the lighter moss placeholder tone (textSubtle) that distinguishes search
+ *   chrome from form fields.
+ */
 export function MosaicSearchBar({
   value,
   onChangeText,
@@ -27,40 +36,26 @@ export function MosaicSearchBar({
   onPress,
   className,
 }: MosaicSearchBarProps) {
-  const theme = useTheme();
   const { t } = useI18n();
-  const [focused, setFocused] = useState(false);
-  const resolvedPlaceholder = placeholder ?? t('search.placeholder');
+  const theme = useTheme();
 
-  const containerClassName = [
-    'h-10 flex-row items-center gap-2 rounded-full border bg-surface px-3.5',
-    focused && !onPress ? 'border-primary' : 'border-border',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const content = (
-    <>
-      <Icon as={Search} size="sm" className="text-text-muted" />
-
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onSubmitEditing={onSubmitEditing}
-        returnKeyType="search"
-        autoFocus={autoFocus}
-        placeholder={resolvedPlaceholder}
-        placeholderTextColor={theme.colors.textSubtle}
-        selectionColor={theme.colors.primary}
-        // Read-only in entry mode: keeps Android's TextInput from stealing taps and opening the keyboard
-        editable={!onPress}
-        pointerEvents={onPress ? 'none' : undefined}
-        className="h-10 flex-1 text-body leading-none text-text web:outline-none"
-      />
-    </>
+  const field = (
+    <MosaicInput
+      icon={Search}
+      value={value}
+      onChangeText={onChangeText}
+      onSubmitEditing={onSubmitEditing}
+      returnKeyType="search"
+      autoFocus={autoFocus}
+      placeholder={placeholder ?? t('search.placeholder')}
+      // Lighter moss tone distinguishes search chrome from form fields;
+      // theme hex (native prop, not a style) instead of var()
+      placeholderTextColor={theme.colors.textSubtle}
+      // Read-only in hot-zone mode: keeps Android's TextInput from stealing taps and opening the keyboard
+      editable={!onPress}
+      pointerEvents={onPress ? 'none' : undefined}
+      wrapperClassName={className}
+    />
   );
 
   if (onPress) {
@@ -68,12 +63,12 @@ export function MosaicSearchBar({
       <Pressable
         onPress={onPress}
         accessibilityRole="search"
-        className={`${containerClassName} active:opacity-70`}
+        className="active:opacity-70"
       >
-        {content}
+        {field}
       </Pressable>
     );
   }
 
-  return <View className={containerClassName}>{content}</View>;
+  return field;
 }

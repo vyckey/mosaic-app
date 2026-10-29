@@ -1,25 +1,27 @@
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { Clock, ImagePlus, MapPin, X } from 'lucide-react-native';
+import { Clock, ImagePlus, MapPin, Smile, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   MosaicButton,
+  MosaicDateTimePicker,
+  MosaicDialog,
   MosaicEmojiPickerModal,
+  MosaicIcon,
+  MosaicImage,
   MosaicPressable,
+  MosaicScreen,
   MosaicScreenHeader,
   MosaicSheet,
-  MosaicTags,
+  MosaicTagsEditor,
   MosaicText,
   MosaicTextArea,
 } from '@/components/mosaic';
 import { Icon } from '@/components/ui/icon';
-import { EMOTION_EMOJIS, getEmotionLabel } from '@/constants/emojis';
+import type { EmojiValue } from '@/constants/emojis';
 import { useI18n } from '@/i18n/useI18n';
 
 import { formatRecordedAt } from './format';
@@ -35,12 +37,14 @@ const uuidV4 = () =>
   });
 
 export function MomentEditScreen() {
-  const { t, locale } = useI18n();
-  const insets = useSafeAreaInsets();
+  const { t } = useI18n();
   const [recordedAt, setRecordedAt] = useState(() => new Date());
   const [pickerVisible, setPickerVisible] = useState(false);
+  /** Wheel edits stay local until the sheet is confirmed. */
+  const [draftRecordedAt, setDraftRecordedAt] = useState(() => new Date());
   const [tags, setTags] = useState<string[]>([]);
-  const [emoji, setEmoji] = useState('');
+  const [emoji, setEmoji] = useState<EmojiValue | null>(null);
+  const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const [text, setText] = useState('');
   const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [sourceVisible, setSourceVisible] = useState(false);
@@ -82,9 +86,9 @@ export function MomentEditScreen() {
     }
   };
 
-  const handleConfirm = (date: Date) => {
+  const handleConfirm = () => {
+    setRecordedAt(draftRecordedAt);
     setPickerVisible(false);
-    setRecordedAt(date);
   };
 
   const handleLocation = async () => {
@@ -158,7 +162,7 @@ export function MomentEditScreen() {
       source: 'USER',
       content: {
         text: text.trim(),
-        emoji,
+        emoji: emoji?.emoji ?? '',
         media_ids: [],
       },
       location: location ?? undefined,
@@ -179,27 +183,22 @@ export function MomentEditScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('moment.editTitle')}
-          onBack={() => router.back()}
-          actions={
-            <MosaicButton
-              size="sm"
-              variant="glass"
-              disabled={!canPublish}
-              onPress={handlePublish}
-            >
-              {t('moment.publish')}
-            </MosaicButton>
-          }
-          className="flex-1"
-        />
-      </View>
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('moment.editTitle')}
+        onBack={() => router.back()}
+        actions={[
+          <MosaicButton
+            key="publish"
+            size="md"
+            variant="glass"
+            disabled={!canPublish}
+            onPress={handlePublish}
+          >
+            {t('moment.publish')}
+          </MosaicButton>,
+        ]}
+      />
 
       <ScrollView
         className="flex-1"
@@ -209,7 +208,10 @@ export function MomentEditScreen() {
       >
         <View className="mt-3 flex-row items-center gap-2.5">
           <MosaicPressable
-            onPress={() => setPickerVisible(true)}
+            onPress={() => {
+              setDraftRecordedAt(recordedAt);
+              setPickerVisible(true);
+            }}
             hitSlop={{ top: 8, bottom: 8 }}
             className="flex-row items-center pr-2"
           >
@@ -219,19 +221,30 @@ export function MomentEditScreen() {
             </MosaicText>
           </MosaicPressable>
 
-          <MosaicEmojiPickerModal
-            items={EMOTION_EMOJIS.map((item) => ({
-              emoji: item.emoji,
-              label: getEmotionLabel(item, locale),
-            }))}
-            value={emoji || null}
-            onChange={(next) => setEmoji(next ?? '')}
-            placeholder={t('moment.selectEmoji')}
-            title={t('moment.emoji')}
-          />
+          <MosaicPressable
+            onPress={() => setEmojiPickerVisible(true)}
+            hitSlop={{ top: 8, bottom: 8 }}
+            className="flex-row items-center gap-1 self-start pr-1"
+          >
+            {emoji ? (
+              <>
+                <MosaicText variant="body">{emoji.emoji}</MosaicText>
+                <MosaicText variant="tiny" tone="text-muted">
+                  {emoji.label}
+                </MosaicText>
+              </>
+            ) : (
+              <>
+                <MosaicIcon as={Smile} size="sm" tone="text-muted" />
+                <MosaicText variant="tiny" tone="text-muted">
+                  {t('moment.selectEmoji')}
+                </MosaicText>
+              </>
+            )}
+          </MosaicPressable>
         </View>
 
-        <MosaicTags value={tags} onChange={setTags} className="mt-5" />
+        <MosaicTagsEditor value={tags} onChange={setTags} className="mt-5" />
 
         <MosaicTextArea
           value={text}
@@ -248,13 +261,9 @@ export function MomentEditScreen() {
           {photos.map((photo, index) => (
             <View
               key={photo.assetId ?? `${photo.uri}-${index}`}
-              className="h-24 w-24 overflow-hidden rounded-stat"
+              className="h-24 w-24 overflow-hidden rounded-tile"
             >
-              <Image
-                source={{ uri: photo.uri }}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
-              />
+              <MosaicImage source={{ uri: photo.uri }} />
               <MosaicPressable
                 onPress={() =>
                   setPhotos((prev) => prev.filter((_, i) => i !== index))
@@ -269,7 +278,7 @@ export function MomentEditScreen() {
           {photos.length < MAX_PHOTOS && (
             <MosaicPressable
               onPress={() => setSourceVisible(true)}
-              className="h-24 w-24 items-center justify-center rounded-stat border border-dashed border-border bg-surface"
+              className="h-24 w-24 items-center justify-center rounded-tile border border-dashed border-border bg-surface"
             >
               <Icon as={ImagePlus} size="lg" className="text-text-muted" />
               <MosaicText variant="tiny" tone="text-muted" className="mt-1.5">
@@ -312,14 +321,29 @@ export function MomentEditScreen() {
         </MosaicPressable>
       </ScrollView>
 
-      <DateTimePickerModal
-        isVisible={pickerVisible}
-        mode="datetime"
-        date={recordedAt}
+      {/* Date-time wheel in a centred dialog: the whole choice is visible at
+          once and the recorded time only changes on confirm. */}
+      <MosaicDialog
+        visible={pickerVisible}
+        onClose={() => setPickerVisible(false)}
         onConfirm={handleConfirm}
-        onCancel={() => setPickerVisible(false)}
-        cancelTextIOS={t('common.cancel')}
-        confirmTextIOS={t('moment.confirm')}
+        title={t('moment.recordedAt')}
+      >
+        <MosaicDateTimePicker
+          value={draftRecordedAt}
+          mode="datetime"
+          // minuteInterval={5}
+          hourCycle="24h"
+          onChange={setDraftRecordedAt}
+        />
+      </MosaicDialog>
+
+      <MosaicEmojiPickerModal
+        visible={emojiPickerVisible}
+        value={emoji?.emoji ?? null}
+        onChange={setEmoji}
+        onClose={() => setEmojiPickerVisible(false)}
+        maxWidth="90%"
       />
 
       <MosaicSheet
@@ -342,6 +366,6 @@ export function MomentEditScreen() {
           {t('moment.chooseFromLibrary')}
         </MosaicButton>
       </MosaicSheet>
-    </View>
+    </MosaicScreen>
   );
 }

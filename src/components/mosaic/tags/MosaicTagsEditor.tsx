@@ -2,12 +2,12 @@ import { useState } from 'react';
 
 import { useI18n } from '@/i18n/useI18n';
 
-import { MosaicPressable } from './MosaicPressable';
+import { MosaicPressable } from '../MosaicPressable';
+import { MosaicText } from '../MosaicText';
 import { MosaicTagPickerSheet } from './MosaicTagPickerSheet';
-import { MosaicText } from './MosaicText';
 import { useTagCatalog } from './tag-catalog';
 
-export interface MosaicTagsProps {
+export interface MosaicTagsEditorProps {
   value: string[];
   onChange: (tags: string[]) => void;
   /** Empty-state hint shown when no tags; defaults to # + t('tag.emptyPlaceholder') */
@@ -15,12 +15,17 @@ export interface MosaicTagsProps {
   className?: string;
 }
 
-export function MosaicTags({
+/**
+ * Inline tag editor: shows the current tags as a tappable summary and opens
+ * the tag picker sheet for editing. The sheet keeps a draft, so cancelling
+ * leaves `value` untouched until the user confirms.
+ */
+export function MosaicTagsEditor({
   value,
   onChange,
   placeholder,
   className,
-}: MosaicTagsProps) {
+}: MosaicTagsEditorProps) {
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
   const catalog = useTagCatalog();

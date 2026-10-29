@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native';
 
-import { MosaicChip } from './MosaicChip';
+import { MosaicChip, type MosaicChipSize } from './MosaicChip';
 
 export interface MosaicChipOption {
   value: string;
@@ -14,6 +14,8 @@ export interface MosaicChipGroupProps {
   onChange?: (value: string) => void;
   /** 横向滚动模式（原型 .subnav：时间流/日历/地图/分类） */
   scrollable?: boolean;
+  /** 透传给每个 chip 的尺寸档位 */
+  size?: MosaicChipSize;
   className?: string;
 }
 
@@ -26,6 +28,7 @@ export function MosaicChipGroup({
   value,
   onChange,
   scrollable = false,
+  size,
   className,
 }: MosaicChipGroupProps) {
   const chips = options.map((option) => (
@@ -35,6 +38,7 @@ export function MosaicChipGroup({
       emoji={option.emoji}
       active={option.value === value}
       onPress={onChange ? () => onChange(option.value) : undefined}
+      size={size}
     />
   ));
 
