@@ -8,6 +8,7 @@ import type {
 import { View } from 'react-native';
 
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { useTheme } from '@/hooks/use-theme';
 
 import { glassRimStyle, MosaicGlass } from './MosaicGlass';
 
@@ -42,11 +43,12 @@ export function MosaicTextArea({
   containerClassName,
   glass = false,
   style,
-  placeholderTextColor = 'var(--color-text-muted)',
+  placeholderTextColor,
   onContentSizeChange,
   ...inputProps
 }: MosaicTextAreaProps) {
   const [height, setHeight] = useState(minHeight);
+  const theme = useTheme();
 
   const handleContentSizeChange = useCallback(
     // Since RN 0.88 TextInputContentSizeChangeEvent is NativeSyntheticEvent<{ contentSize }>
@@ -68,10 +70,16 @@ export function MosaicTextArea({
         {...inputProps}
         multiline
         onContentSizeChange={handleContentSizeChange}
-        placeholderTextColor={placeholderTextColor}
+        // Native color props take theme hex, never var() (not a style)
+        placeholderTextColor={placeholderTextColor ?? theme.colors.textMuted}
         // NativeWind preview does not apply className font styles to TextInput, so typography must go through style (see MEMORY.md)
         style={[
-          { fontSize: 14, lineHeight: 22, color: 'var(--color-text)', padding: 0 },
+          {
+            fontSize: theme.typography.body.fontSize,
+            lineHeight: theme.typography.body.lineHeight,
+            color: theme.colors.text,
+            padding: 0,
+          },
           style,
         ]}
       />

@@ -1,4 +1,5 @@
 allowBuilds:
+  '@parcel/watcher': false
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - '@expo/cli@58.1.15'
@@ -21,5 +22,6 @@ minimumReleaseAgeExclude:
   - expo-image@58.0.17
   - expo-location@58.0.19
   - expo-router@58.0.26
+  - jest-expo@58.0.14
 overrides:
   lightningcss: 1.30.1

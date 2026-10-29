@@ -1,7 +1,7 @@
 import type { ThemeRadius } from './types';
 
 export const radius: ThemeRadius = {
-  tile: 12,
+  tile: 8,
   btn: 14,
   stat: 16,
   card: 22,

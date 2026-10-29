@@ -7,30 +7,48 @@ import { Icon } from '@/components/ui/icon';
 
 import { MosaicText } from './MosaicText';
 
-export interface MosaicListRowProps {
+interface MosaicListRowBaseProps {
   title: string;
-  /** 标题下的灰色小字（分类名 / 摘要） */
+  /** Muted line under the title (category / summary) */
   subtitle?: string;
-  /** 左侧固定宽度时间，如 09:15（原型 .fragtime） */
+  /** Fixed-width leading time label, e.g. 09:15 */
   time?: string;
-  /** 左侧 emoji 图标块（与 icon 二选一） */
-  emoji?: string;
-  icon?: LucideIcon;
   onPress?: () => void;
-  /** 默认显示右侧 › */
+  /**
+   * Show the trailing chevron. Defaults to `true` when `onPress` is provided and
+   * `false` for static rows, so a non-interactive row never hints at navigation.
+   */
   chevron?: boolean;
-  /** 自定义右侧内容，优先于 chevron */
+  /**
+   * Custom trailing content, wins over `chevron`. Pass `null` to render nothing
+   * explicitly; `undefined` keeps the default chevron behavior.
+   */
   trailing?: ReactNode;
-  /** title 与 trailing 之间的值展示（如 username、绑定状态） */
+  /** Value shown between the title and the trailing content (username, state, ...) */
   value?: string;
-  /** value 为空时的占位文案 */
+  /** Placeholder shown when `value` is missing or empty */
   placeholder?: string;
-  /** 标题颜色（danger 用于退出登录等破坏性操作） */
+  /** Title color (danger for destructive actions such as sign-out) */
   tone?: 'default' | 'danger';
+  /** Disable interaction, dim the row and drop the pressed feedback */
+  disabled?: boolean;
+  /** Screen-reader label; falls back to the row's own text content */
+  accessibilityLabel?: string;
   className?: string;
 }
 
-/** 对应原型 .frag 行；配合 MosaicList 使用获得分隔线 */
+/**
+ * Leading visual of a row: an emoji block or a Lucide icon, never both.
+ * The third branch keeps the visual fully optional.
+ */
+export type MosaicListRowIconProps =
+  | { emoji: string; icon?: never }
+  | { emoji?: never; icon: LucideIcon }
+  | { emoji?: never; icon?: never };
+
+export type MosaicListRowProps = MosaicListRowBaseProps & MosaicListRowIconProps;
+
+/** Single row of a MosaicList; pair it with MosaicList to get dividers. */
 export function MosaicListRow({
   title,
   subtitle,
@@ -38,16 +56,27 @@ export function MosaicListRow({
   emoji,
   icon,
   onPress,
-  chevron = true,
+  chevron,
   trailing,
   value,
   placeholder,
   tone = 'default',
+  disabled = false,
+  accessibilityLabel,
   className,
 }: MosaicListRowProps) {
+  // Disabled rows keep the button role but must not show pressed feedback.
+  const interactive = Boolean(onPress) && !disabled;
+  const showChevron = chevron ?? Boolean(onPress);
+
+  // An empty string counts as "no value" so the placeholder can take over.
+  const hasValue = value !== undefined && value !== null && value !== '';
+  const displayValue = hasValue ? value : placeholder;
+
   const rowClassName = [
-    'w-full flex-row items-center gap-3 py-2',
-    onPress && 'active:opacity-70',
+    'w-full min-h-12 flex-row items-center gap-3 py-2',
+    interactive && 'active:opacity-70',
+    disabled && 'opacity-40',
     className,
   ]
     .filter(Boolean)
@@ -93,34 +122,42 @@ export function MosaicListRow({
         )}
       </View>
 
-      {(value || placeholder) && (
+      {displayValue !== undefined && (
         <MosaicText
           variant="body"
-          tone={value ? 'text-muted' : 'text-subtle'}
+          tone={hasValue ? 'text-muted' : 'text-subtle'}
           numberOfLines={1}
-          className="max-w-[50%] shrink-0 text-right"
+          className="max-w-[40%] shrink-0 text-right"
         >
-          {value || placeholder}
+          {displayValue}
         </MosaicText>
       )}
 
-      {trailing ??
-        (chevron && (
-          <View className="shrink-0">
-            <Icon as={ChevronRight} size="sm" className="text-text-subtle" />
-          </View>
-        ))}
+      {trailing !== undefined ? (
+        trailing
+      ) : showChevron ? (
+        <View className="shrink-0">
+          <Icon as={ChevronRight} size="sm" className="text-text-subtle" />
+        </View>
+      ) : null}
     </>
   );
 
   if (!onPress) {
-    return <View className={rowClassName}>{body}</View>;
+    return (
+      <View className={rowClassName} accessibilityLabel={accessibilityLabel}>
+        {body}
+      </View>
+    );
   }
 
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      accessibilityLabel={accessibilityLabel}
       className={rowClassName}
     >
       {body}

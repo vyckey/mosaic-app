@@ -8,6 +8,42 @@ export default {
     add: '添加',
     create: '创建',
     more: '更多',
+    today: '今天',
+    yesterday: '昨天',
+    // Localized month names for date labels (index 0 = January)
+    months: [
+      '一月',
+      '二月',
+      '三月',
+      '四月',
+      '五月',
+      '六月',
+      '七月',
+      '八月',
+      '九月',
+      '十月',
+      '十一月',
+      '十二月',
+    ],
+    // Unit suffix after every wheel row.
+    units: {
+      year: '年',
+      day: '日',
+      hour: '时',
+      minute: '分',
+    },
+    am: '上午',
+    pm: '下午',
+  },
+
+  // Accessible names of the date / time wheel columns.
+  dateTime: {
+    year: '年',
+    month: '月',
+    day: '日',
+    hour: '小时',
+    minute: '分钟',
+    period: '上午或下午',
   },
 
   tab: {
@@ -142,6 +178,123 @@ export default {
     loginRegister: '登录 / 注册',
     settings: '设置',
     moreFeatures: '更多功能开发中...',
+    modules: {
+      portrait: '我的画像',
+      lifeEvents: '人生大事',
+      report: '拼图报告',
+      story: '人生故事',
+    },
+  },
+
+  lifeEvents: {
+    title: '人生大事',
+    search: '搜索人生大事',
+    searchPlaceholder: '搜索事件名称、描述或年份...',
+    timeline: '人生时间轴',
+    add: '添加人生大事',
+    addHint: '记录一个值得铭记的时刻',
+    empty: '这个分类下还没有人生大事',
+    emptyHint: '记录第一个值得铭记的时刻吧',
+    collapsedCount: '{{count}} 条',
+
+    overview: {
+      title: '我的人生轨迹',
+      subtitle: '每一个重要时刻，都组成了今天的我。',
+    },
+
+    stats: {
+      events: '人生大事',
+      stages: '人生阶段',
+      years: '人生年数',
+    },
+
+    categories: {
+      all: '全部',
+      family: '家庭',
+      education: '教育',
+      career: '事业',
+      relationship: '感情',
+      health: '健康',
+      migration: '迁徙',
+      achievement: '成就',
+      other: '其他',
+    },
+
+    importance: {
+      turningPoint: '重要转折',
+      milestone: '重要时刻',
+    },
+
+    status: {
+      past: '已发生',
+      ongoing: '进行中',
+    },
+
+    date: {
+      year: '{{year}} 年',
+      month: '{{year}} 年 {{month}} 月',
+      day: '{{year}} 年 {{month}} 月 {{day}} 日',
+      range: '{{start}}—{{end}} 年',
+      monthOnly: '{{month}} 月',
+      monthDayOnly: '{{month}} 月 {{day}} 日',
+    },
+
+    sort: {
+      newestFirst: '最新在前',
+      oldestFirst: '最早在前',
+    },
+
+    detail: {
+      title: '人生大事',
+      notFound: '这条人生大事不存在',
+      story: '这段经历',
+      photos: '相关照片',
+      photoCount: '{{count}} 张照片',
+      addPhotos: '添加照片',
+      photosEmpty: '还没有添加照片，记录这个时刻的影像。',
+      info: '相关信息',
+      location: '发生地点',
+      people: '相关人物',
+      notAdded: '尚未添加',
+      relatedMoments: '相关生活碎片',
+      momentTag: '生活碎片',
+      viewAll: '查看全部',
+      edit: '编辑',
+      duplicate: '复制',
+      delete: '删除',
+      deleteTitle: '删除这条人生大事？',
+      deleteMessage: '删除后无法恢复。',
+    },
+
+    create: {
+      title: '添加人生大事',
+      editTitle: '编辑人生大事',
+      heading: '记录一个重要时刻',
+      subtitle: '那些值得被记住的人生节点。',
+      type: '事件类型',
+      name: '事件名称',
+      namePlaceholder: '例如：大学毕业',
+      date: '发生时间',
+      precision: {
+        year: '仅年份',
+        month: '年月',
+        day: '完整日期',
+        range: '大约时间',
+      },
+      year: '年',
+      month: '月',
+      day: '日',
+      endYear: '结束年份',
+      description: '事件描述',
+      descriptionPlaceholder: '记录这个时刻的故事……',
+      related: '相关信息',
+      addPhotos: '添加照片',
+      addLocation: '添加地点',
+      addPeople: '关联人物',
+      linkMoments: '关联生活碎片',
+      status: '事件状态',
+      nameRequired: '请输入事件名称',
+    },
   },
 
   settings: {
@@ -253,6 +406,10 @@ export default {
   records: {
     stream: '时间流',
     calendar: '日历',
+    photoShape: {
+      rounded: '圆角',
+      stamp: '邮票',
+    },
     map: '地图',
     category: '分类',
     dateFormat: '{{month}}月{{day}}日 · {{count}} 条记录',

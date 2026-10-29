@@ -8,6 +8,42 @@ export default {
     add: 'Add',
     create: 'Create',
     more: 'More',
+    today: 'Today',
+    yesterday: 'Yest.',
+    // Localized month names for date labels (index 0 = January)
+    months: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    // Unit suffix after every wheel row; English wheels read bare numbers.
+    units: {
+      year: '',
+      day: '',
+      hour: '',
+      minute: '',
+    },
+    am: 'AM',
+    pm: 'PM',
+  },
+
+  // Accessible names of the date / time wheel columns.
+  dateTime: {
+    year: 'Year',
+    month: 'Month',
+    day: 'Day',
+    hour: 'Hour',
+    minute: 'Minute',
+    period: 'AM or PM',
   },
 
   tab: {
@@ -125,7 +161,8 @@ export default {
     locationDenied: 'Location Access Denied',
     locationDeniedDesc: 'Please allow location access in system settings',
     locationFailed: 'Location Failed',
-    locationFailedDesc: 'Unable to get current location, please try again later',
+    locationFailedDesc:
+      'Unable to get current location, please try again later',
   },
 
   dev: {
@@ -142,6 +179,123 @@ export default {
     loginRegister: 'Log in / Register',
     settings: 'Settings',
     moreFeatures: 'More features coming soon...',
+    modules: {
+      portrait: 'My Portrait',
+      lifeEvents: 'Life Events',
+      report: 'Mosaic Report',
+      story: 'Life Story',
+    },
+  },
+
+  lifeEvents: {
+    title: 'Life Events',
+    search: 'Search lifeevents',
+    searchPlaceholder: 'Search title, description or year...',
+    timeline: 'Life timeline',
+    add: 'Add a life event',
+    addHint: 'Record a moment worth remembering',
+    empty: 'No lifeevents in this category yet',
+    emptyHint: 'Add the first moment worth remembering',
+    collapsedCount: '{{count}} events',
+
+    overview: {
+      title: 'My life journey',
+      subtitle: 'Every important moment shaped who I am today.',
+    },
+
+    stats: {
+      events: 'Life Events',
+      stages: 'Life stages',
+      years: 'Years',
+    },
+
+    categories: {
+      all: 'All',
+      family: 'Family',
+      education: 'Education',
+      career: 'Career',
+      relationship: 'Love',
+      health: 'Health',
+      migration: 'Moves',
+      achievement: 'Achievements',
+      other: 'Other',
+    },
+
+    importance: {
+      turningPoint: 'Turning point',
+      milestone: 'Milestone',
+    },
+
+    status: {
+      past: 'Happened',
+      ongoing: 'Ongoing',
+    },
+
+    date: {
+      year: '{{year}}',
+      month: '{{monthName}} {{year}}',
+      day: '{{monthName}} {{day}}, {{year}}',
+      range: '{{start}} – {{end}}',
+      monthOnly: '{{monthName}}',
+      monthDayOnly: '{{monthName}} {{day}}',
+    },
+
+    sort: {
+      newestFirst: 'Newest first',
+      oldestFirst: 'Oldest first',
+    },
+
+    detail: {
+      title: 'Life event',
+      notFound: 'This life event does not exist.',
+      story: 'The story',
+      photos: 'Photos',
+      photoCount: '{{count}} photos',
+      addPhotos: 'Add photos',
+      photosEmpty: 'No photos yet — capture this moment.',
+      info: 'Details',
+      location: 'Location',
+      people: 'People',
+      notAdded: 'Not added',
+      relatedMoments: 'Related moments',
+      momentTag: 'Moment',
+      viewAll: 'View all',
+      edit: 'Edit',
+      duplicate: 'Duplicate',
+      delete: 'Delete',
+      deleteTitle: 'Delete this life event?',
+      deleteMessage: 'This cannot be undone.',
+    },
+
+    create: {
+      title: 'Add life event',
+      editTitle: 'Edit life event',
+      heading: 'Record an important moment',
+      subtitle: 'The moments worth remembering.',
+      type: 'Event type',
+      name: 'Event name',
+      namePlaceholder: 'e.g. Graduated from university',
+      date: 'When did it happen',
+      precision: {
+        year: 'Year',
+        month: 'Year & month',
+        day: 'Full date',
+        range: 'Approximate',
+      },
+      year: 'Year',
+      month: 'Month',
+      day: 'Day',
+      endYear: 'End year',
+      description: 'Event description',
+      descriptionPlaceholder: 'Tell the story of this moment...',
+      related: 'Related info',
+      addPhotos: 'Add photos',
+      addLocation: 'Add location',
+      addPeople: 'Add people',
+      linkMoments: 'Link moments',
+      status: 'Event status',
+      nameRequired: 'Please enter the event name',
+    },
   },
 
   settings: {
@@ -253,6 +407,10 @@ export default {
   records: {
     stream: 'Stream',
     calendar: 'Calendar',
+    photoShape: {
+      rounded: 'Rounded',
+      stamp: 'Stamp',
+    },
     map: 'Map',
     category: 'Category',
     dateFormat: '{{month}}/{{day}} · {{count}} records',

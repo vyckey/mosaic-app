@@ -8,11 +8,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   MosaicButton,
   MosaicChip,
+  MosaicScreen,
   MosaicScreenHeader,
   MosaicTags,
   MosaicTextArea,
@@ -26,10 +26,11 @@ export type DiaryFormat = 'TEXT' | 'MARKDOWN';
 const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
 const markdownStyles = StyleSheet.create({
+  // Body copy follows the body typography token (kept in sync with --text-body)
   body: {
     color: lightTheme.colors.text,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: lightTheme.typography.body.fontSize,
+    lineHeight: lightTheme.typography.body.lineHeight,
   },
   heading1: {
     color: lightTheme.colors.text,
@@ -41,9 +42,10 @@ const markdownStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
+  // h3 mirrors the subtitle tier (18) so headings stay above the 16px body
   heading3: {
     color: lightTheme.colors.text,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   link: {
@@ -68,7 +70,6 @@ const markdownStyles = StyleSheet.create({
 
 export function DiaryScreen() {
   const { t } = useI18n();
-  const insets = useSafeAreaInsets();
   const { draft, format: formatParam, tags: tagsParam } = useLocalSearchParams<{
     draft?: string;
     format?: string;
@@ -128,38 +129,34 @@ export function DiaryScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('diary.title')}
-          onBack={() => router.back()}
-          actions={
-            <>
-              {isMarkdown && (
-                <MosaicButton
-                  size="sm"
-                  variant="glass"
-                  onPress={handleTogglePreview}
-                >
-                  {preview ? t('diary.edit') : t('diary.preview')}
-                </MosaicButton>
-              )}
-              <MosaicButton
-                size="sm"
-                variant="glass"
-                disabled={!canSave}
-                onPress={handleSave}
-              >
-                {t('common.save')}
-              </MosaicButton>
-            </>
-          }
-          className="flex-1"
-        />
-      </View>
+    // Editor page: fixed meta chrome (title / weather / tags) + a flex-1 body
+    // (editor or preview) — the page owns its layout, not a default ScrollView.
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('diary.title')}
+        onBack={() => router.back()}
+        actions={[
+          isMarkdown && (
+            <MosaicButton
+              key="preview"
+              size="md"
+              variant="glass"
+              onPress={handleTogglePreview}
+            >
+              {preview ? t('diary.edit') : t('diary.preview')}
+            </MosaicButton>
+          ),
+          <MosaicButton
+            key="save"
+            size="md"
+            variant="glass"
+            disabled={!canSave}
+            onPress={handleSave}
+          >
+            {t('common.save')}
+          </MosaicButton>,
+        ]}
+      />
 
       <TextInput
         value={title}
@@ -210,6 +207,6 @@ export function DiaryScreen() {
           containerClassName="mx-[18px] mb-4 mt-3 flex-1"
         />
       )}
-    </View>
+    </MosaicScreen>
   );
 }

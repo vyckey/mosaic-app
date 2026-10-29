@@ -132,10 +132,10 @@ export function PhoneAccountField({
             flagContainer: { backgroundColor: 'transparent', paddingHorizontal: 10 },
             caret: { color: 'var(--color-text-muted)' },
             divider: { backgroundColor: 'var(--color-border)' },
-            callingCode: { color: 'var(--color-text)', fontSize: 14, fontWeight: '500' },
+            callingCode: { color: 'var(--color-text)', fontSize: 16, fontWeight: '500' },
             input: {
               color: 'var(--color-text)',
-              fontSize: 14,
+              fontSize: 16,
               paddingHorizontal: 10,
               paddingVertical: 0,
             },

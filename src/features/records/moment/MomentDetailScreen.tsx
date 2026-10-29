@@ -1,12 +1,15 @@
 import { router } from 'expo-router';
-import { ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 
-import { MosaicButton, MosaicScreenHeader } from '@/components/mosaic';
+import {
+  MosaicButton,
+  MosaicScreen,
+  MosaicScreenHeader,
+} from '@/components/mosaic';
 import { useI18n } from '@/i18n/useI18n';
 
-import { MomentRecordDetail } from './MomentRecordDetail';
 import type { MomentRecordDetailProps } from './MomentRecordDetail';
+import { MomentRecordDetail } from './MomentRecordDetail';
 
 export type MomentDetailScreenProps = MomentRecordDetailProps;
 
@@ -17,32 +20,26 @@ export function MomentDetailScreen({
   user,
 }: MomentDetailScreenProps) {
   const { t } = useI18n();
-  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('moment.title')}
-          onBack={() => router.back()}
-          actions={
-            <MosaicButton
-              size="sm"
-              variant="glass"
-              onPress={() => {
-                // TODO: enter edit mode
-                router.push('/moment');
-              }}
-            >
-              {t('moment.edit')}
-            </MosaicButton>
-          }
-          className="flex-1"
-        />
-      </View>
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('moment.title')}
+        onBack={() => router.back()}
+        actions={[
+          <MosaicButton
+            key="edit"
+            size="md"
+            variant="glass"
+            onPress={() => {
+              // TODO: enter edit mode
+              router.push('/moment');
+            }}
+          >
+            {t('moment.edit')}
+          </MosaicButton>,
+        ]}
+      />
 
       <ScrollView
         className="flex-1"
@@ -50,14 +47,10 @@ export function MomentDetailScreen({
         showsVerticalScrollIndicator={false}
       >
         {/* Upper half: moment content */}
-        <MomentRecordDetail
-          record={record}
-          mediaUris={mediaUris}
-          user={user}
-        />
+        <MomentRecordDetail record={record} mediaUris={mediaUris} user={user} />
 
         {/* TODO: lower half: comments section (MomentDetailComments) not implemented yet */}
       </ScrollView>
-    </View>
+    </MosaicScreen>
   );
 }
