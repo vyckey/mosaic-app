@@ -2,6 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import type { ReactNode } from 'react';
 import { Fragment } from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MosaicDivider } from '@/components/mosaic';
 
@@ -14,10 +15,11 @@ interface RecordsStreamProps {
   header?: ReactNode;
   /**
    * Render as a plain inline list instead of a virtualized FlashList.
-   * Use when the stream is embedded inside a scrolling card (e.g. the
-   * calendar day detail or the map featured location): nesting a
-   * virtualized list inside a plain ScrollView breaks windowing, and
-   * those call sites only ever hold a handful of items.
+   * Use when the stream is embedded inside another scroll container
+   * (e.g. the calendar view's ScrollView page or the map's featured
+   * location card): nesting a virtualized list inside a plain ScrollView
+   * breaks windowing, and those call sites only ever hold a handful of
+   * items.
    */
   inline?: boolean;
 }
@@ -45,6 +47,8 @@ export function RecordsStream({
   header,
   inline = false,
 }: RecordsStreamProps) {
+  const insets = useSafeAreaInsets();
+
   if (inline) {
     return (
       <View>
@@ -68,12 +72,13 @@ export function RecordsStream({
         header ? <View className="mb-4 px-[18px]">{header}</View> : null
       }
       showsVerticalScrollIndicator={false}
-      // FlashList forwards style objects, not className. Mirrors MosaicScreen's
-      // page padding: pt-2 and pb-40 clearance for the floating tab-bar capsule.
-      // Horizontal gutters live on each entry (`padded`) so separators stay
-      // full-bleed. Keep in sync with MosaicScreen defaults.
+      // FlashList forwards style objects, not className. The scroller owns its
+      // own padding: exact safe-area top (offsets were flattened to +0 across
+      // screens) and pb-160 (= pb-40) clearance for the floating tab-bar
+      // capsule. Horizontal gutters live on each entry (`padded`) so
+      // separators stay full-bleed.
       contentContainerStyle={{
-        paddingTop: 8,
+        paddingTop: insets.top,
         paddingBottom: 160,
       }}
     />

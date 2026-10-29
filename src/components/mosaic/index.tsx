@@ -10,6 +10,8 @@ export * from './MosaicGlass';
 export * from './MosaicIcon';
 export * from './MosaicIconBadge';
 export * from './MosaicIconButton';
+export * from './MosaicImage';
+export * from './MosaicImagePreview';
 export * from './MosaicInput';
 export * from './MosaicInputBar';
 export * from './MosaicList';

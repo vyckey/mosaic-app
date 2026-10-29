@@ -1,10 +1,14 @@
-import { Image } from 'expo-image';
 import { MapPin, User } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { View } from 'react-native';
 
-import { MosaicIcon, MosaicPressable, MosaicText } from '@/components/mosaic';
+import {
+  MosaicIcon,
+  MosaicImage,
+  MosaicPressable,
+  MosaicText,
+} from '@/components/mosaic';
 import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 
@@ -61,11 +65,7 @@ export const RecordEntry = memo(function RecordEntry({
       <View className="flex-row items-center gap-3">
         <Avatar className="h-12 w-12 shrink-0 bg-primary-muted">
           {author?.avatarUri ? (
-            <Image
-              source={{ uri: author.avatarUri }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-            />
+            <MosaicImage source={{ uri: author.avatarUri }} />
           ) : (
             <Icon as={User} size="lg" className="h-7 w-7 text-text-muted" />
           )}
@@ -92,23 +92,18 @@ export const RecordEntry = memo(function RecordEntry({
         </View>
       </View>
 
-      {/* Type-specific body; default dispatches on record.type */}
-      {children ?? <RecordEntryBody record={record} />}
-
       {tags?.length ? (
         <View className="mt-4 flex-row flex-wrap items-center gap-2">
           {tags.map((tag) => (
-            <MosaicText
-              key={tag}
-              variant="caption"
-              tone="primary"
-              weight="500"
-            >
+            <MosaicText key={tag} variant="caption" tone="primary" weight="500">
               #{tag}
             </MosaicText>
           ))}
         </View>
       ) : null}
+
+      {/* Type-specific body; default dispatches on record.type */}
+      {children ?? <RecordEntryBody record={record} />}
 
       {location ? (
         <View className="mt-4 flex-row items-center">

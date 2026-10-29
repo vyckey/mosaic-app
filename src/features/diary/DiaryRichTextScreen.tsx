@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   MosaicButton,
   MosaicChip,
+  MosaicScreen,
   MosaicScreenHeader,
   MosaicTags,
   MosaicText,
@@ -34,8 +35,11 @@ export function DiaryRichTextScreen() {
     tags?: string;
   }>();
 
-  // SDK 58 升级后 tentap 类型链 × RN 0.88 触发 TS2589（类型实例化过深），tentap 1.1.0 未修复；
-  // 依赖内部类型，应用侧无法绕开。升级 tentap 后可尝试删除本行（若已修复会报“未使用的指令”提醒）。
+  // After the SDK 58 upgrade, tentap's type chain × RN 0.88 triggers TS2589
+  // (type instantiation too deep); tentap 1.1.0 has not fixed it and the types
+  // live in the dependency, so the app side cannot route around it. Re-check
+  // after a tentap upgrade — if fixed, this line can go (TS will flag the
+  // now-unused directive).
   // @ts-expect-error Type instantiation is excessively deep
   const editor = useEditorBridge({
     autofocus: false,
@@ -109,27 +113,24 @@ export function DiaryRichTextScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('diary.title')}
-          onBack={() => router.back()}
-          actions={
-            <MosaicButton
-              size="sm"
-              variant="glass"
-              disabled={!canSave}
-              onPress={handleSave}
-            >
-              {t('common.save')}
-            </MosaicButton>
-          }
-          className="flex-1"
-        />
-      </View>
+    // Editor page: fixed meta chrome + a flex-1 rich-text surface with an
+    // absolute keyboard toolbar — the page owns its layout.
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('diary.title')}
+        onBack={() => router.back()}
+        actions={[
+          <MosaicButton
+            key="save"
+            size="md"
+            variant="glass"
+            disabled={!canSave}
+            onPress={handleSave}
+          >
+            {t('common.save')}
+          </MosaicButton>,
+        ]}
+      />
 
       <TextInput
         value={title}
@@ -173,6 +174,6 @@ export function DiaryRichTextScreen() {
       >
         <Toolbar editor={editor} hidden={false} />
       </KeyboardAvoidingView>
-    </View>
+    </MosaicScreen>
   );
 }

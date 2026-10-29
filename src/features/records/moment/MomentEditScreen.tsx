@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
@@ -6,12 +5,13 @@ import { Clock, ImagePlus, MapPin, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   MosaicButton,
   MosaicEmojiPickerModal,
+  MosaicImage,
   MosaicPressable,
+  MosaicScreen,
   MosaicScreenHeader,
   MosaicSheet,
   MosaicTags,
@@ -36,7 +36,6 @@ const uuidV4 = () =>
 
 export function MomentEditScreen() {
   const { t, locale } = useI18n();
-  const insets = useSafeAreaInsets();
   const [recordedAt, setRecordedAt] = useState(() => new Date());
   const [pickerVisible, setPickerVisible] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
@@ -179,27 +178,22 @@ export function MomentEditScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('moment.editTitle')}
-          onBack={() => router.back()}
-          actions={
-            <MosaicButton
-              size="sm"
-              variant="glass"
-              disabled={!canPublish}
-              onPress={handlePublish}
-            >
-              {t('moment.publish')}
-            </MosaicButton>
-          }
-          className="flex-1"
-        />
-      </View>
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('moment.editTitle')}
+        onBack={() => router.back()}
+        actions={[
+          <MosaicButton
+            key="publish"
+            size="md"
+            variant="glass"
+            disabled={!canPublish}
+            onPress={handlePublish}
+          >
+            {t('moment.publish')}
+          </MosaicButton>,
+        ]}
+      />
 
       <ScrollView
         className="flex-1"
@@ -248,13 +242,9 @@ export function MomentEditScreen() {
           {photos.map((photo, index) => (
             <View
               key={photo.assetId ?? `${photo.uri}-${index}`}
-              className="h-24 w-24 overflow-hidden rounded-stat"
+              className="h-24 w-24 overflow-hidden rounded-tile"
             >
-              <Image
-                source={{ uri: photo.uri }}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
-              />
+              <MosaicImage source={{ uri: photo.uri }} />
               <MosaicPressable
                 onPress={() =>
                   setPhotos((prev) => prev.filter((_, i) => i !== index))
@@ -269,7 +259,7 @@ export function MomentEditScreen() {
           {photos.length < MAX_PHOTOS && (
             <MosaicPressable
               onPress={() => setSourceVisible(true)}
-              className="h-24 w-24 items-center justify-center rounded-stat border border-dashed border-border bg-surface"
+              className="h-24 w-24 items-center justify-center rounded-tile border border-dashed border-border bg-surface"
             >
               <Icon as={ImagePlus} size="lg" className="text-text-muted" />
               <MosaicText variant="tiny" tone="text-muted" className="mt-1.5">
@@ -342,6 +332,6 @@ export function MomentEditScreen() {
           {t('moment.chooseFromLibrary')}
         </MosaicButton>
       </MosaicSheet>
-    </View>
+    </MosaicScreen>
   );
 }

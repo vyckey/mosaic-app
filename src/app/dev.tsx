@@ -1,27 +1,24 @@
 import { router } from 'expo-router';
-import { ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 
-import { MosaicButton, MosaicScreenHeader, MosaicText } from '@/components/mosaic';
+import {
+  MosaicButton,
+  MosaicScreen,
+  MosaicScreenHeader,
+  MosaicText,
+} from '@/components/mosaic';
 import { useI18n } from '@/i18n/useI18n';
 
-/** 原型/开发期的页面入口集合，便于逐页走查 UI */
+/** Prototype/dev-stage entry list for walking through screens one by one */
 export default function DevScreen() {
   const { t } = useI18n();
-  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="min-h-11 flex-row items-center px-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <MosaicScreenHeader
-          title={t('dev.title')}
-          onBack={() => router.back()}
-          className="flex-1"
-        />
-      </View>
+    <MosaicScreen>
+      <MosaicScreenHeader
+        title={t('dev.title')}
+        onBack={() => router.back()}
+      />
 
       <ScrollView
         className="flex-1"
@@ -46,6 +43,6 @@ export default function DevScreen() {
           {t('dev.momentEdit')}
         </MosaicButton>
       </ScrollView>
-    </View>
+    </MosaicScreen>
   );
 }

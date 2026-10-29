@@ -1,8 +1,12 @@
-import { Image } from 'expo-image';
 import { MapPin, User } from 'lucide-react-native';
 import { View } from 'react-native';
 
-import { MosaicText } from '@/components/mosaic';
+import {
+  MosaicImage,
+  MosaicImagePreview,
+  MosaicText,
+  useMosaicImagePreview,
+} from '@/components/mosaic';
 import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 
@@ -34,6 +38,7 @@ export function MomentRecordDetail({
   const photos = content.media_ids
     .map((id) => mediaUris[id])
     .filter((url): url is string => Boolean(url));
+  const preview = useMosaicImagePreview();
   // Fullest available place label: address first, then reverse-geo levels
   const locationLabel =
     location?.address ??
@@ -46,11 +51,7 @@ export function MomentRecordDetail({
       <View className="mt-3 flex-row items-center gap-3">
         <Avatar className="h-12 w-12 shrink-0 bg-primary-muted">
           {user.avatarUri ? (
-            <Image
-              source={{ uri: user.avatarUri }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-            />
+            <MosaicImage source={{ uri: user.avatarUri }} />
           ) : (
             <Icon as={User} size="lg" className="h-7 w-7 text-text-muted" />
           )}
@@ -96,21 +97,33 @@ export function MomentRecordDetail({
       )}
 
       {photos.length > 0 && (
-        <View className="mt-5 flex-row flex-wrap gap-2.5">
-          {photos.map((url) => (
+        <View className="mt-5 flex-row flex-wrap gap-y-2.5">
+          {photos.map((url, index) => (
+            // Same uniform 3-column cell as the feed grid (see MomentEntryBody).
             <View
               key={url}
-              className="h-32 w-32 overflow-hidden rounded-stat bg-surface"
+              style={{
+                aspectRatio: 1,
+                marginRight: index % 3 === 2 ? 0 : '2.5%',
+              }}
+              className="w-[31.6%]"
             >
-              <Image
+              <MosaicImage
                 source={{ uri: url }}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
+                onPress={() =>
+                  preview.open(
+                    photos.map((uri) => ({ uri })),
+                    index,
+                  )
+                }
               />
             </View>
           ))}
         </View>
       )}
+
+      {/* Full-screen viewer for the photos above (swipe / pinch / double-tap) */}
+      <MosaicImagePreview {...preview} />
 
       {location && locationLabel ? (
         <View className="mt-4 flex-row items-center">

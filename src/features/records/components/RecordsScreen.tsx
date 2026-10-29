@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MosaicChipGroup, MosaicScreen } from '@/components/mosaic';
 import { MosaicSearchBar } from '@/components/mosaic/MosaicSearchBar';
@@ -16,6 +17,10 @@ import { RecordsStream } from './RecordsStream';
 export function RecordsScreen() {
   const { t } = useI18n();
   const [view, setView] = useState<RecordsView>('stream');
+  // Non-stream views: plain ScrollView page — the scroller owns the top inset
+  // and pb-40 clears the floating capsule. (The stream view's FlashList owns
+  // its padding inside RecordsStream.)
+  const insets = useSafeAreaInsets();
 
   const viewSwitcher = (
     <MosaicChipGroup
@@ -55,20 +60,27 @@ export function RecordsScreen() {
 
   return (
     <MosaicScreen>
-      <MosaicSearchBar
-        placeholder={t('search.placeholder')}
-        onPress={() => router.push('/search')}
-      />
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-[18px] pb-40"
+        contentContainerStyle={{ paddingTop: insets.top }}
+        showsVerticalScrollIndicator={false}
+      >
+        <MosaicSearchBar
+          placeholder={t('search.placeholder')}
+          onPress={() => router.push('/search')}
+        />
 
-      <View className="mt-3">{viewSwitcher}</View>
+        <View className="mt-3">{viewSwitcher}</View>
 
-      <View className="mt-4">
-        {view === 'calendar' && <RecordsCalendar />}
-        {view === 'map' && <RecordsMap />}
-        {view === 'category' && (
-          <RecordsCategories categories={mockCategories} />
-        )}
-      </View>
+        <View className="mt-4">
+          {view === 'calendar' && <RecordsCalendar />}
+          {view === 'map' && <RecordsMap />}
+          {view === 'category' && (
+            <RecordsCategories categories={mockCategories} />
+          )}
+        </View>
+      </ScrollView>
     </MosaicScreen>
   );
 }

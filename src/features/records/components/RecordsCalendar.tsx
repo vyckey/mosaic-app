@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
-import { MosaicCard, MosaicText } from '@/components/mosaic';
+import { MosaicText } from '@/components/mosaic';
 import {
   Calendar,
   CalendarBody,
@@ -75,7 +75,8 @@ export function RecordsCalendar() {
 
   return (
     <View className="gap-4">
-      <MosaicCard>
+      {/* Flat calendar on the page canvas (no card chrome) */}
+      <View>
         <Calendar
           mode="single"
           value={selectedDate}
@@ -102,9 +103,10 @@ export function RecordsCalendar() {
             <CalendarGrid />
           </CalendarBody>
         </Calendar>
-      </MosaicCard>
+      </View>
 
-      <MosaicCard>
+      {/* Selected-day records: flat section, entries share the page gutter */}
+      <View>
         <MosaicText variant="body" tone="text" weight="600">
           {t('records.dateFormat', {
             month: currentMonth.month,
@@ -122,7 +124,7 @@ export function RecordsCalendar() {
             </MosaicText>
           )}
         </View>
-      </MosaicCard>
+      </View>
     </View>
   );
 }

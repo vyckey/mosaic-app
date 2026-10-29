@@ -1,5 +1,5 @@
-import { Settings, User } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { Settings, User } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import {
@@ -7,22 +7,31 @@ import {
   MosaicCard,
   MosaicIconButton,
   MosaicPressable,
+  MosaicScreen,
   MosaicText,
 } from '@/components/mosaic';
 import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 import { useI18n } from '@/i18n/useI18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function MeScreen() {
   const { t } = useI18n();
+  const insets = useSafeAreaInsets();
 
   const handleLogin = () => {
     router.push('/login');
   };
 
+  // MosaicScreen owns the page frame: safe-area top, 18dp gutters, the
+  // ScrollView (future logged-in content), and pb-40 clearance over the
+  // floating tab-bar capsule.
   return (
-    <View className="flex-1 bg-background px-6 py-12">
-      <View className="flex-row items-center gap-3">
+    <MosaicScreen className="flex-1 gap-6 px-4">
+      <View
+        className="flex-row items-center gap-3"
+        style={{ paddingTop: insets.top }}
+      >
         <MosaicPressable
           onPress={() => {}}
           accessibilityLabel={t('me.avatar')}
@@ -42,12 +51,22 @@ export function MeScreen() {
           </MosaicText>
         </View>
 
-        <MosaicIconButton variant="ghost" size="md" onPress={() => router.push('/settings')} accessibilityLabel={t('me.settings')}>
+        <MosaicIconButton
+          variant="ghost"
+          size="md"
+          onPress={() => router.push('/settings')}
+          accessibilityLabel={t('me.settings')}
+        >
           <Icon as={Settings} size="xl" className="text-text" />
         </MosaicIconButton>
       </View>
 
-      <MosaicButton variant="primary" size="lg" onPress={handleLogin} className="mt-8">
+      <MosaicButton
+        variant="primary"
+        size="lg"
+        onPress={handleLogin}
+        className="mt-8"
+      >
         {t('me.loginRegister')}
       </MosaicButton>
 
@@ -68,6 +87,6 @@ export function MeScreen() {
       >
         {t('dev.title')}
       </MosaicButton>
-    </View>
+    </MosaicScreen>
   );
 }
